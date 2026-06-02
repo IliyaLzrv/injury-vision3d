@@ -15,9 +15,10 @@ public class SecurityConfig {
 		return http
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/health").permitAll()
+				.requestMatchers("/api/health", "/h2-console/**").permitAll()
 				.anyRequest().permitAll()
 			)
+			.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 			.build();
 	}
 }
