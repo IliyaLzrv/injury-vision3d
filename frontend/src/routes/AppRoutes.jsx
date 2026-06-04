@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from '../components/layout/ProtectedRoute.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
-import BodyMapPlaceholderPage from '../pages/BodyMapPlaceholderPage.jsx';
+import BodyMapPage from '../pages/BodyMapPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
@@ -28,7 +28,7 @@ export default function AppRoutes() {
 
 			<Route element={<ProtectedRoute />}>
 				<Route path="/dashboard" element={<DashboardPage />} />
-				<Route path="/body-map" element={<BodyMapPlaceholderPage />} />
+				<Route path="/body-map" element={<BodyMapPage />} />
 			</Route>
 
 			<Route path="/" element={<RootRedirect />} />
