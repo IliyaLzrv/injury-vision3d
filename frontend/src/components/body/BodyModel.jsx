@@ -1,36 +1,54 @@
+import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Grid, OrbitControls } from '@react-three/drei';
+import { BODY_PART } from './bodyParts.js';
 
 const SKIN = '#a8b8c8';
 const SKIN_SOFT = '#8b9aab';
+const HOVER_COLOR = '#c4d4e4';
+const SELECTED_COLOR = '#6ee7b7';
 const METALNESS = 0.12;
 const ROUGHNESS = 0.62;
 
-function handlePartHover(name) {
-	window.console.log(`[BodyMap] ${name}`);
-}
-
 function BodyPart({
-	name,
+	bodyPart,
 	position,
 	rotation = [0, 0, 0],
 	scale = [1, 1, 1],
 	geometry,
-	color = SKIN,
+	baseColor = SKIN,
+	selectedBodyPart,
+	onBodyPartSelect,
 }) {
+	const [hovered, setHovered] = useState(false);
+	const isSelected = selectedBodyPart === bodyPart;
+
+	let color = baseColor;
+	if (isSelected) {
+		color = SELECTED_COLOR;
+	} else if (hovered) {
+		color = HOVER_COLOR;
+	}
+
 	return (
 		<mesh
-			name={name}
+			name={bodyPart}
 			position={position}
 			rotation={rotation}
 			scale={scale}
 			onPointerOver={(event) => {
 				event.stopPropagation();
+				setHovered(true);
 				document.body.style.cursor = 'pointer';
-				handlePartHover(name);
 			}}
-			onPointerOut={() => {
+			onPointerOut={(event) => {
+				event.stopPropagation();
+				setHovered(false);
 				document.body.style.cursor = 'default';
+			}}
+			onClick={(event) => {
+				event.stopPropagation();
+				onBodyPartSelect?.(bodyPart);
 			}}
 		>
 			{geometry}
@@ -66,138 +84,163 @@ function SceneFloor() {
 	);
 }
 
-function HumanoidBody() {
+function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 	const armHang = 0.12;
+	const partProps = { onBodyPartSelect, selectedBodyPart };
 
 	return (
 		<group>
-			{/* Feet */}
+			{/* Ankles / feet */}
 			<BodyPart
-				name="LeftFoot"
+				bodyPart={BODY_PART.LEFT_ANKLE}
 				position={[-0.14, 0.05, 0.07]}
 				geometry={<boxGeometry args={[0.12, 0.06, 0.26]} />}
-				color={SKIN_SOFT}
+				baseColor={SKIN_SOFT}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightFoot"
+				bodyPart={BODY_PART.RIGHT_ANKLE}
 				position={[0.14, 0.05, 0.07]}
 				geometry={<boxGeometry args={[0.12, 0.06, 0.26]} />}
-				color={SKIN_SOFT}
+				baseColor={SKIN_SOFT}
+				{...partProps}
 			/>
 
 			{/* Lower legs (shins) */}
 			<BodyPart
-				name="LeftLowerLeg"
+				bodyPart={BODY_PART.LEFT_LEG}
 				position={[-0.14, 0.36, 0.02]}
 				geometry={<capsuleGeometry args={[0.095, 0.34, 10, 14]} />}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightLowerLeg"
+				bodyPart={BODY_PART.RIGHT_LEG}
 				position={[0.14, 0.36, 0.02]}
 				geometry={<capsuleGeometry args={[0.095, 0.34, 10, 14]} />}
+				{...partProps}
 			/>
 
-			{/* Upper legs (thighs) from hips */}
+			{/* Knees */}
 			<BodyPart
-				name="LeftLeg"
+				bodyPart={BODY_PART.LEFT_KNEE}
+				position={[-0.14, 0.52, 0.03]}
+				geometry={<sphereGeometry args={[0.1, 14, 14]} />}
+				{...partProps}
+			/>
+			<BodyPart
+				bodyPart={BODY_PART.RIGHT_KNEE}
+				position={[0.14, 0.52, 0.03]}
+				geometry={<sphereGeometry args={[0.1, 14, 14]} />}
+				{...partProps}
+			/>
+
+			{/* Upper legs (thighs) */}
+			<BodyPart
+				bodyPart={BODY_PART.LEFT_LEG}
 				position={[-0.14, 0.68, 0]}
 				geometry={<capsuleGeometry args={[0.11, 0.3, 10, 14]} />}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightLeg"
+				bodyPart={BODY_PART.RIGHT_LEG}
 				position={[0.14, 0.68, 0]}
 				geometry={<capsuleGeometry args={[0.11, 0.3, 10, 14]} />}
+				{...partProps}
 			/>
 
-			{/* Pelvis / hips */}
+			{/* Abdomen / pelvis */}
 			<BodyPart
-				name="Pelvis"
+				bodyPart={BODY_PART.ABDOMEN}
 				position={[0, 0.9, 0]}
 				geometry={<capsuleGeometry args={[0.2, 0.14, 10, 14]} />}
 				scale={[1.15, 1, 0.85]}
+				{...partProps}
 			/>
 
-			{/* Torso — wider at chest */}
+			{/* Chest */}
 			<BodyPart
-				name="Torso"
+				bodyPart={BODY_PART.CHEST}
 				position={[0, 1.18, 0]}
 				geometry={<boxGeometry args={[0.44, 0.38, 0.22]} />}
+				{...partProps}
 			/>
 
 			{/* Shoulders */}
 			<BodyPart
-				name="LeftShoulder"
+				bodyPart={BODY_PART.LEFT_SHOULDER}
 				position={[-0.3, 1.32, 0]}
 				geometry={<sphereGeometry args={[0.09, 14, 14]} />}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightShoulder"
+				bodyPart={BODY_PART.RIGHT_SHOULDER}
 				position={[0.3, 1.32, 0]}
 				geometry={<sphereGeometry args={[0.09, 14, 14]} />}
+				{...partProps}
 			/>
 
 			{/* Upper arms */}
 			<BodyPart
-				name="LeftArm"
+				bodyPart={BODY_PART.LEFT_ARM}
 				position={[-0.38, 1.12, 0.02]}
 				rotation={[0.1, 0, armHang]}
 				geometry={<capsuleGeometry args={[0.075, 0.28, 8, 12]} />}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightArm"
+				bodyPart={BODY_PART.RIGHT_ARM}
 				position={[0.38, 1.12, 0.02]}
 				rotation={[0.1, 0, -armHang]}
 				geometry={<capsuleGeometry args={[0.075, 0.28, 8, 12]} />}
+				{...partProps}
 			/>
 
-			{/* Lower arms (forearms) */}
+			{/* Forearms */}
 			<BodyPart
-				name="LeftForearm"
+				bodyPart={BODY_PART.LEFT_ARM}
 				position={[-0.48, 0.82, 0.04]}
 				rotation={[0.05, 0, armHang + 0.08]}
 				geometry={<capsuleGeometry args={[0.065, 0.26, 8, 12]} />}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightForearm"
+				bodyPart={BODY_PART.RIGHT_ARM}
 				position={[0.48, 0.82, 0.04]}
 				rotation={[0.05, 0, -armHang - 0.08]}
 				geometry={<capsuleGeometry args={[0.065, 0.26, 8, 12]} />}
+				{...partProps}
 			/>
 
 			{/* Hands */}
 			<BodyPart
-				name="LeftHand"
+				bodyPart={BODY_PART.LEFT_HAND}
 				position={[-0.54, 0.58, 0.05]}
 				rotation={[0, 0, armHang + 0.1]}
 				geometry={<sphereGeometry args={[0.07, 12, 12]} />}
-				color={SKIN_SOFT}
+				baseColor={SKIN_SOFT}
+				{...partProps}
 			/>
 			<BodyPart
-				name="RightHand"
+				bodyPart={BODY_PART.RIGHT_HAND}
 				position={[0.54, 0.58, 0.05]}
 				rotation={[0, 0, -armHang - 0.1]}
 				geometry={<sphereGeometry args={[0.07, 12, 12]} />}
-				color={SKIN_SOFT}
-			/>
-
-			{/* Neck */}
-			<BodyPart
-				name="Neck"
-				position={[0, 1.42, 0.02]}
-				geometry={<capsuleGeometry args={[0.07, 0.1, 8, 12]} />}
+				baseColor={SKIN_SOFT}
+				{...partProps}
 			/>
 
 			{/* Head */}
 			<BodyPart
-				name="Head"
+				bodyPart={BODY_PART.HEAD}
 				position={[0, 1.6, 0.03]}
 				geometry={<sphereGeometry args={[0.2, 24, 24]} />}
+				{...partProps}
 			/>
 		</group>
 	);
 }
 
-export default function BodyModel() {
+export default function BodyModel({ onBodyPartSelect, selectedBodyPart = null }) {
 	return (
 		<div className="h-[min(560px,62vh)] w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80">
 			<Canvas
@@ -221,7 +264,10 @@ export default function BodyModel() {
 				<directionalLight position={[-4, 3, -2]} intensity={0.4} />
 
 				<SceneFloor />
-				<HumanoidBody />
+				<HumanoidBody
+					onBodyPartSelect={onBodyPartSelect}
+					selectedBodyPart={selectedBodyPart}
+				/>
 
 				<OrbitControls
 					enablePan={false}
