@@ -3,6 +3,7 @@ package com.injuryvision.injury;
 import com.injuryvision.auth.InvalidCredentialsException;
 import com.injuryvision.injury.dto.CreateInjuryLogRequest;
 import com.injuryvision.injury.dto.InjuryLogResponse;
+import com.injuryvision.injury.dto.UpdateInjuryLogRequest;
 import com.injuryvision.user.User;
 import com.injuryvision.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,23 @@ public class InjuryLogService {
 		return injuryLogRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
 			.map(InjuryLogResponse::from)
 			.toList();
+	}
+
+	@Transactional
+	public InjuryLogResponse updateInjuryLog(String email, Long id, UpdateInjuryLogRequest request) {
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(InvalidCredentialsException::new);
+
+		InjuryLog injuryLog = injuryLogRepository.findByIdAndUserId(id, user.getId())
+			.orElseThrow(InjuryLogNotFoundException::new);
+
+		injuryLog.setInjuryType(request.getInjuryType());
+		injuryLog.setPainLevel(request.getPainLevel());
+		injuryLog.setRecoveryStatus(request.getRecoveryStatus());
+		injuryLog.setNotes(request.getNotes());
+
+		InjuryLog saved = injuryLogRepository.save(injuryLog);
+
+		return InjuryLogResponse.from(saved);
 	}
 }

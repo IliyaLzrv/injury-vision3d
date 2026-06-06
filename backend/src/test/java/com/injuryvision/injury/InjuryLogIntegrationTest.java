@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -173,6 +174,110 @@ class InjuryLogIntegrationTest {
 	}
 
 	@Test
+	void updateInjuryLogWithValidJwtSucceeds() throws Exception {
+		long logId = createInjuryLogAndGetId();
+		ObjectNode updateRequest = validUpdateRequest();
+
+		mockMvc.perform(put("/api/injuries/" + logId)
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(logId))
+			.andExpect(jsonPath("$.bodyPart").value("LEFT_KNEE"))
+			.andExpect(jsonPath("$.injuryType").value("STRAIN"))
+			.andExpect(jsonPath("$.painLevel").value(3))
+			.andExpect(jsonPath("$.recoveryStatus").value("RECOVERED"))
+			.andExpect(jsonPath("$.notes").value("Feeling better after rest"))
+			.andExpect(jsonPath("$.user").doesNotExist())
+			.andExpect(jsonPath("$.userId").doesNotExist());
+	}
+
+	@Test
+	void updateInjuryLogWithoutJwtFails() throws Exception {
+		long logId = createInjuryLogAndGetId();
+		ObjectNode updateRequest = validUpdateRequest();
+
+		mockMvc.perform(put("/api/injuries/" + logId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isUnauthorized())
+			.andExpect(jsonPath("$.message").value("Unauthorized"));
+	}
+
+	@Test
+	void updateInjuryLogForAnotherUsersLogFails() throws Exception {
+		long logId = createInjuryLogAndGetId();
+		ObjectNode updateRequest = validUpdateRequest();
+
+		RegisterRequest otherUser = new RegisterRequest();
+		otherUser.setFullName("Alex Athlete");
+		otherUser.setEmail("alex@example.com");
+		otherUser.setPassword("secret123");
+
+		mockMvc.perform(post("/api/auth/register")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(otherUser)))
+			.andExpect(status().isCreated());
+
+		String otherToken = loginAndGetToken("alex@example.com", "secret123");
+
+		mockMvc.perform(put("/api/injuries/" + logId)
+				.header("Authorization", "Bearer " + otherToken)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("Injury log not found"));
+	}
+
+	@Test
+	void updateInjuryLogWithPainLevelBelowOneFails() throws Exception {
+		long logId = createInjuryLogAndGetId();
+		ObjectNode updateRequest = validUpdateRequest();
+		updateRequest.put("painLevel", 0);
+
+		mockMvc.perform(put("/api/injuries/" + logId)
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("Validation failed"))
+			.andExpect(jsonPath("$.errors.painLevel").value("Pain level must be at least 1"));
+	}
+
+	@Test
+	void updateInjuryLogWithPainLevelAboveTenFails() throws Exception {
+		long logId = createInjuryLogAndGetId();
+		ObjectNode updateRequest = validUpdateRequest();
+		updateRequest.put("painLevel", 11);
+
+		mockMvc.perform(put("/api/injuries/" + logId)
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("Validation failed"))
+			.andExpect(jsonPath("$.errors.painLevel").value("Pain level must be at most 10"));
+	}
+
+	@Test
+	void updateInjuryLogWithMissingRequiredFieldsFails() throws Exception {
+		long logId = createInjuryLogAndGetId();
+		ObjectNode updateRequest = objectMapper.createObjectNode();
+		updateRequest.put("notes", "Missing required fields");
+
+		mockMvc.perform(put("/api/injuries/" + logId)
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("Validation failed"))
+			.andExpect(jsonPath("$.errors.injuryType").value("Injury type is required"))
+			.andExpect(jsonPath("$.errors.painLevel").value("Pain level is required"))
+			.andExpect(jsonPath("$.errors.recoveryStatus").value("Recovery status is required"));
+	}
+
+	@Test
 	void createInjuryLogWithMissingRequiredFieldsFails() throws Exception {
 		ObjectNode request = objectMapper.createObjectNode();
 		request.put("notes", "Missing required fields");
@@ -187,6 +292,29 @@ class InjuryLogIntegrationTest {
 			.andExpect(jsonPath("$.errors.injuryType").value("Injury type is required"))
 			.andExpect(jsonPath("$.errors.painLevel").value("Pain level is required"))
 			.andExpect(jsonPath("$.errors.recoveryStatus").value("Recovery status is required"));
+	}
+
+	private long createInjuryLogAndGetId() throws Exception {
+		String responseBody = mockMvc.perform(post("/api/injuries")
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(validInjuryLogRequest())))
+			.andExpect(status().isCreated())
+			.andReturn()
+			.getResponse()
+			.getContentAsString();
+
+		JsonNode json = objectMapper.readTree(responseBody);
+		return json.get("id").asLong();
+	}
+
+	private ObjectNode validUpdateRequest() {
+		ObjectNode request = objectMapper.createObjectNode();
+		request.put("injuryType", "STRAIN");
+		request.put("painLevel", 3);
+		request.put("recoveryStatus", "RECOVERED");
+		request.put("notes", "Feeling better after rest");
+		return request;
 	}
 
 	private ObjectNode validInjuryLogRequest() {

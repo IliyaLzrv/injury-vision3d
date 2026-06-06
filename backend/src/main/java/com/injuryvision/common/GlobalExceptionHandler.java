@@ -2,6 +2,7 @@ package com.injuryvision.common;
 
 import com.injuryvision.auth.DuplicateEmailException;
 import com.injuryvision.auth.InvalidCredentialsException;
+import com.injuryvision.injury.InjuryLogNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,6 +39,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(InvalidCredentialsException.class)
 	public ResponseEntity<Map<String, String>> handleInvalidCredentials(InvalidCredentialsException ex) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body(Map.of("message", ex.getMessage()));
+	}
+
+	@ExceptionHandler(InjuryLogNotFoundException.class)
+	public ResponseEntity<Map<String, String>> handleInjuryLogNotFound(InjuryLogNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(Map.of("message", ex.getMessage()));
 	}
 }
