@@ -2,16 +2,21 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BodyModel from '../components/body/BodyModel.jsx';
 import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
+import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
 import { BODY_PART_LABELS } from '../components/body/bodyParts.js';
 
 export default function BodyMapPage() {
 	const [selectedBodyPart, setSelectedBodyPart] = useState(null);
-	const [actionMessage, setActionMessage] = useState(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [successMessage, setSuccessMessage] = useState(null);
 
-	function handleAddInjuryLog(bodyPart) {
-		window.console.log('[BodyMap] Add injury log for:', bodyPart);
-		const label = BODY_PART_LABELS[bodyPart] ?? bodyPart;
-		setActionMessage(`Injury log form coming soon for ${label}.`);
+	function handleAddInjuryLog() {
+		setIsModalOpen(true);
+	}
+
+	function handleInjuryLogSaved() {
+		const label = BODY_PART_LABELS[selectedBodyPart] ?? selectedBodyPart;
+		setSuccessMessage(`Injury log saved for ${label}.`);
 	}
 
 	return (
@@ -49,12 +54,12 @@ export default function BodyMapPage() {
 					/>
 				</div>
 
-				{actionMessage && (
+				{successMessage && (
 					<p
 						role="status"
 						className="mt-4 rounded-lg border border-emerald-800/50 bg-emerald-950/30 px-4 py-3 text-sm text-emerald-200"
 					>
-						{actionMessage}
+						{successMessage}
 					</p>
 				)}
 
@@ -63,6 +68,13 @@ export default function BodyMapPage() {
 					does not provide medical diagnosis.
 				</p>
 			</div>
+
+			<AddInjuryLogModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				selectedBodyPart={selectedBodyPart}
+				onSuccess={handleInjuryLogSaved}
+			/>
 		</div>
 	);
 }

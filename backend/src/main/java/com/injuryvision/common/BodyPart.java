@@ -2,19 +2,18 @@ package com.injuryvision.common;
 
 public enum BodyPart {
 	HEAD,
-	NECK,
-	SHOULDER,
-	ARM,
-	ELBOW,
-	WRIST,
-	HAND,
 	CHEST,
-	BACK,
 	ABDOMEN,
-	HIP,
-	THIGH,
-	KNEE,
-	SHIN,
-	ANKLE,
-	FOOT
+	LEFT_SHOULDER,
+	RIGHT_SHOULDER,
+	LEFT_ARM,
+	RIGHT_ARM,
+	LEFT_HAND,
+	RIGHT_HAND,
+	LEFT_LEG,
+	RIGHT_LEG,
+	LEFT_KNEE,
+	RIGHT_KNEE,
+	LEFT_ANKLE,
+	RIGHT_ANKLE
 }

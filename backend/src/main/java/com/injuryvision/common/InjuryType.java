@@ -1,11 +1,9 @@
 package com.injuryvision.common;
 
 public enum InjuryType {
-	STRAIN,
+	PAIN,
 	SPRAIN,
+	STRAIN,
 	BRUISE,
-	TENDINITIS,
-	CONTUSION,
-	OVERUSE,
 	OTHER
 }

@@ -1,9 +1,7 @@
 package com.injuryvision.common;
 
 public enum RecoveryStatus {
-	ACUTE,
+	ACTIVE,
 	RECOVERING,
-	ALMOST_RECOVERED,
-	RECOVERED,
-	CHRONIC
+	RECOVERED
 }
