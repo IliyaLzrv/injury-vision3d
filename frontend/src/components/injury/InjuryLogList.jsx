@@ -1,87 +1,23 @@
-import { useEffect, useState } from 'react';
-import { injuryApi } from '../../api/injuryApi.js';
+import { useState } from 'react';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
 import EditInjuryLogModal from './EditInjuryLogModal.jsx';
+import {
+	formatLabel,
+	formatLogDate,
+	INJURY_TYPE_LABELS,
+	RECOVERY_STATUS_LABELS,
+} from './injuryLogUtils.js';
 
-const INJURY_TYPE_LABELS = {
-	PAIN: 'Pain',
-	SPRAIN: 'Sprain',
-	STRAIN: 'Strain',
-	BRUISE: 'Bruise',
-	OTHER: 'Other',
-};
-
-const RECOVERY_STATUS_LABELS = {
-	ACTIVE: 'Active',
-	RECOVERING: 'Recovering',
-	RECOVERED: 'Recovered',
-};
-
-function formatLabel(value, labels) {
-	return labels[value] ?? value?.replaceAll('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase()) ?? '—';
-}
-
-function formatDate(log) {
-	if (log.logDate) {
-		const [year, month, day] = log.logDate.split('-').map(Number);
-		return new Date(year, month - 1, day).toLocaleDateString(undefined, {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		});
-	}
-
-	if (log.createdAt) {
-		return new Date(log.createdAt).toLocaleDateString(undefined, {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		});
-	}
-
-	return '—';
-}
-
-export default function InjuryLogList({ refreshKey = 0 }) {
-	const [logs, setLogs] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [errorMessage, setErrorMessage] = useState('');
-	const [reloadToken, setReloadToken] = useState(0);
+export default function InjuryLogList({
+	logs = [],
+	loading = false,
+	errorMessage = '',
+	onRefresh,
+}) {
 	const [editingLog, setEditingLog] = useState(null);
 
-	useEffect(() => {
-		let cancelled = false;
-
-		async function loadLogs() {
-			setLoading(true);
-			setErrorMessage('');
-
-			try {
-				const data = await injuryApi.getInjuryLogs();
-				if (!cancelled) {
-					setLogs(Array.isArray(data) ? data : []);
-				}
-			} catch (error) {
-				if (!cancelled) {
-					setLogs([]);
-					setErrorMessage(error.message || 'Failed to load injury logs.');
-				}
-			} finally {
-				if (!cancelled) {
-					setLoading(false);
-				}
-			}
-		}
-
-		loadLogs();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [refreshKey, reloadToken]);
-
 	function handleUpdateSuccess() {
-		setReloadToken((token) => token + 1);
+		onRefresh?.();
 	}
 
 	return (
@@ -121,7 +57,7 @@ export default function InjuryLogList({ refreshKey = 0 }) {
 											{formatLabel(log.bodyPart, BODY_PART_LABELS)}
 										</p>
 										<p className="mt-0.5 text-xs text-slate-500">
-											{formatDate(log)}
+											{formatLogDate(log)}
 										</p>
 									</div>
 									<div className="flex items-center gap-2">

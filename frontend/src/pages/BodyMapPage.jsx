@@ -1,16 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { injuryApi } from '../api/injuryApi.js';
 import BodyModel from '../components/body/BodyModel.jsx';
 import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
 import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
 import InjuryLogList from '../components/injury/InjuryLogList.jsx';
+import InjuryTimeline from '../components/injury/InjuryTimeline.jsx';
 import { BODY_PART_LABELS } from '../components/body/bodyParts.js';
 
 export default function BodyMapPage() {
 	const [selectedBodyPart, setSelectedBodyPart] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [successMessage, setSuccessMessage] = useState(null);
-	const [logListRefreshKey, setLogListRefreshKey] = useState(0);
+	const [injuryLogs, setInjuryLogs] = useState([]);
+	const [logsLoading, setLogsLoading] = useState(true);
+	const [logsError, setLogsError] = useState('');
+	const [logsRefreshKey, setLogsRefreshKey] = useState(0);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		async function loadInjuryLogs() {
+			setLogsLoading(true);
+			setLogsError('');
+
+			try {
+				const data = await injuryApi.getInjuryLogs();
+				if (!cancelled) {
+					setInjuryLogs(Array.isArray(data) ? data : []);
+				}
+			} catch (error) {
+				if (!cancelled) {
+					setInjuryLogs([]);
+					setLogsError(error.message || 'Failed to load injury logs.');
+				}
+			} finally {
+				if (!cancelled) {
+					setLogsLoading(false);
+				}
+			}
+		}
+
+		loadInjuryLogs();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [logsRefreshKey]);
+
+	function refreshInjuryLogs() {
+		setLogsRefreshKey((key) => key + 1);
+	}
 
 	function handleAddInjuryLog() {
 		setIsModalOpen(true);
@@ -19,7 +59,7 @@ export default function BodyMapPage() {
 	function handleInjuryLogSaved() {
 		const label = BODY_PART_LABELS[selectedBodyPart] ?? selectedBodyPart;
 		setSuccessMessage(`Injury log saved for ${label}.`);
-		setLogListRefreshKey((key) => key + 1);
+		refreshInjuryLogs();
 	}
 
 	return (
@@ -66,7 +106,18 @@ export default function BodyMapPage() {
 					</p>
 				)}
 
-				<InjuryLogList refreshKey={logListRefreshKey} />
+				<InjuryTimeline
+					logs={injuryLogs}
+					loading={logsLoading}
+					errorMessage={logsError}
+				/>
+
+				<InjuryLogList
+					logs={injuryLogs}
+					loading={logsLoading}
+					errorMessage={logsError}
+					onRefresh={refreshInjuryLogs}
+				/>
 
 				<p className="mt-8 rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
 					InjuryVision 3D is a sports self-tracking and recovery awareness tool. It
