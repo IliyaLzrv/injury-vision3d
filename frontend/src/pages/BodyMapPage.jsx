@@ -1,14 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BodyModel from '../components/body/BodyModel.jsx';
+import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
 import { BODY_PART_LABELS } from '../components/body/bodyParts.js';
 
 export default function BodyMapPage() {
 	const [selectedBodyPart, setSelectedBodyPart] = useState(null);
+	const [actionMessage, setActionMessage] = useState(null);
+
+	function handleAddInjuryLog(bodyPart) {
+		window.console.log('[BodyMap] Add injury log for:', bodyPart);
+		const label = BODY_PART_LABELS[bodyPart] ?? bodyPart;
+		setActionMessage(`Injury log form coming soon for ${label}.`);
+	}
 
 	return (
 		<div className="min-h-dvh bg-slate-950 text-slate-100">
-			<div className="mx-auto max-w-5xl px-6 py-10 sm:py-12">
+			<div className="mx-auto max-w-6xl px-6 py-10 sm:py-12">
 				<Link
 					to="/dashboard"
 					className="inline-flex text-sm text-slate-400 transition hover:text-emerald-300"
@@ -24,27 +32,31 @@ export default function BodyMapPage() {
 					areas.
 				</p>
 
-				<div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3">
-					<p className="text-xs uppercase tracking-wide text-slate-500">
-						Selected body part
-					</p>
-					<p className="mt-1 text-base font-medium text-slate-100">
-						{selectedBodyPart
-							? BODY_PART_LABELS[selectedBodyPart] ?? selectedBodyPart
-							: 'None — click a body part on the model'}
-					</p>
-				</div>
+				<div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-start">
+					<div>
+						<BodyModel
+							onBodyPartSelect={setSelectedBodyPart}
+							selectedBodyPart={selectedBodyPart}
+						/>
+						<p className="mt-4 text-center text-xs text-slate-500 lg:text-left">
+							Drag to rotate · Scroll to zoom · Click a body part to select
+						</p>
+					</div>
 
-				<div className="mt-4">
-					<BodyModel
-						onBodyPartSelect={setSelectedBodyPart}
+					<SelectedBodyPartPanel
 						selectedBodyPart={selectedBodyPart}
+						onAddInjuryLog={handleAddInjuryLog}
 					/>
 				</div>
 
-				<p className="mt-4 text-center text-xs text-slate-500">
-					Drag to rotate · Scroll to zoom · Click a body part to select
-				</p>
+				{actionMessage && (
+					<p
+						role="status"
+						className="mt-4 rounded-lg border border-emerald-800/50 bg-emerald-950/30 px-4 py-3 text-sm text-emerald-200"
+					>
+						{actionMessage}
+					</p>
+				)}
 
 				<p className="mt-8 rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
 					InjuryVision 3D is a sports self-tracking and recovery awareness tool. It
