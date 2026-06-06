@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Grid, OrbitControls } from '@react-three/drei';
 import { BODY_PART } from './bodyParts.js';
+import {
+	buildLatestLogByBodyPart,
+	getBodyPartDisplayColor,
+} from './bodyPainColors.js';
 
-const SKIN = '#a8b8c8';
-const SKIN_SOFT = '#8b9aab';
-const HOVER_COLOR = '#c4d4e4';
-const SELECTED_COLOR = '#6ee7b7';
 const METALNESS = 0.12;
 const ROUGHNESS = 0.62;
 
@@ -16,19 +16,18 @@ function BodyPart({
 	rotation = [0, 0, 0],
 	scale = [1, 1, 1],
 	geometry,
-	baseColor = SKIN,
+	latestLogByBodyPart,
 	selectedBodyPart,
 	onBodyPartSelect,
 }) {
 	const [hovered, setHovered] = useState(false);
-	const isSelected = selectedBodyPart === bodyPart;
 
-	let color = baseColor;
-	if (isSelected) {
-		color = SELECTED_COLOR;
-	} else if (hovered) {
-		color = HOVER_COLOR;
-	}
+	const color = getBodyPartDisplayColor({
+		bodyPart,
+		latestLogByBodyPart,
+		selectedBodyPart,
+		hovered,
+	});
 
 	return (
 		<mesh
@@ -84,29 +83,33 @@ function SceneFloor() {
 	);
 }
 
-function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
+function HumanoidBody({
+	onBodyPartSelect,
+	selectedBodyPart,
+	latestLogByBodyPart,
+}) {
 	const armHang = 0.12;
-	const partProps = { onBodyPartSelect, selectedBodyPart };
+	const partProps = {
+		onBodyPartSelect,
+		selectedBodyPart,
+		latestLogByBodyPart,
+	};
 
 	return (
 		<group>
-			{/* Ankles / feet */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_ANKLE}
 				position={[-0.14, 0.05, 0.07]}
 				geometry={<boxGeometry args={[0.12, 0.06, 0.26]} />}
-				baseColor={SKIN_SOFT}
 				{...partProps}
 			/>
 			<BodyPart
 				bodyPart={BODY_PART.RIGHT_ANKLE}
 				position={[0.14, 0.05, 0.07]}
 				geometry={<boxGeometry args={[0.12, 0.06, 0.26]} />}
-				baseColor={SKIN_SOFT}
 				{...partProps}
 			/>
 
-			{/* Lower legs (shins) */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_LEG}
 				position={[-0.14, 0.36, 0.02]}
@@ -120,7 +123,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Knees */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_KNEE}
 				position={[-0.14, 0.52, 0.03]}
@@ -134,7 +136,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Upper legs (thighs) */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_LEG}
 				position={[-0.14, 0.68, 0]}
@@ -148,7 +149,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Abdomen / pelvis */}
 			<BodyPart
 				bodyPart={BODY_PART.ABDOMEN}
 				position={[0, 0.9, 0]}
@@ -157,7 +157,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Chest */}
 			<BodyPart
 				bodyPart={BODY_PART.CHEST}
 				position={[0, 1.18, 0]}
@@ -165,7 +164,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Shoulders */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_SHOULDER}
 				position={[-0.3, 1.32, 0]}
@@ -179,7 +177,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Upper arms */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_ARM}
 				position={[-0.38, 1.12, 0.02]}
@@ -195,7 +192,6 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Forearms */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_ARM}
 				position={[-0.48, 0.82, 0.04]}
@@ -211,13 +207,11 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				{...partProps}
 			/>
 
-			{/* Hands */}
 			<BodyPart
 				bodyPart={BODY_PART.LEFT_HAND}
 				position={[-0.54, 0.58, 0.05]}
 				rotation={[0, 0, armHang + 0.1]}
 				geometry={<sphereGeometry args={[0.07, 12, 12]} />}
-				baseColor={SKIN_SOFT}
 				{...partProps}
 			/>
 			<BodyPart
@@ -225,11 +219,9 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 				position={[0.54, 0.58, 0.05]}
 				rotation={[0, 0, -armHang - 0.1]}
 				geometry={<sphereGeometry args={[0.07, 12, 12]} />}
-				baseColor={SKIN_SOFT}
 				{...partProps}
 			/>
 
-			{/* Head */}
 			<BodyPart
 				bodyPart={BODY_PART.HEAD}
 				position={[0, 1.6, 0.03]}
@@ -240,7 +232,16 @@ function HumanoidBody({ onBodyPartSelect, selectedBodyPart }) {
 	);
 }
 
-export default function BodyModel({ onBodyPartSelect, selectedBodyPart = null }) {
+export default function BodyModel({
+	onBodyPartSelect,
+	selectedBodyPart = null,
+	injuryLogs = [],
+}) {
+	const latestLogByBodyPart = useMemo(
+		() => buildLatestLogByBodyPart(injuryLogs),
+		[injuryLogs]
+	);
+
 	return (
 		<div className="h-[min(560px,62vh)] w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80">
 			<Canvas
@@ -267,6 +268,7 @@ export default function BodyModel({ onBodyPartSelect, selectedBodyPart = null })
 				<HumanoidBody
 					onBodyPartSelect={onBodyPartSelect}
 					selectedBodyPart={selectedBodyPart}
+					latestLogByBodyPart={latestLogByBodyPart}
 				/>
 
 				<OrbitControls

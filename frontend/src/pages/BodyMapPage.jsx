@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
 import BodyModel from '../components/body/BodyModel.jsx';
+import { BODY_PAIN_LEGEND } from '../components/body/bodyPainColors.js';
 import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
 import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
 import InjuryLogList from '../components/injury/InjuryLogList.jsx';
@@ -85,8 +86,21 @@ export default function BodyMapPage() {
 						<BodyModel
 							onBodyPartSelect={setSelectedBodyPart}
 							selectedBodyPart={selectedBodyPart}
+							injuryLogs={injuryLogs}
 						/>
-						<p className="mt-4 text-center text-xs text-slate-500 lg:text-left">
+						<div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+							{BODY_PAIN_LEGEND.map((item) => (
+								<div key={item.key} className="flex items-center gap-1.5 text-xs text-slate-400">
+									<span
+										className="h-2.5 w-2.5 rounded-full border border-slate-700"
+										style={{ backgroundColor: item.color }}
+										aria-hidden="true"
+									/>
+									<span>{item.label}</span>
+								</div>
+							))}
+						</div>
+						<p className="mt-3 text-center text-xs text-slate-500 lg:text-left">
 							Drag to rotate · Scroll to zoom · Click a body part to select
 						</p>
 					</div>
