@@ -6,10 +6,13 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/injuries")
@@ -19,6 +22,14 @@ public class InjuryLogController {
 
 	public InjuryLogController(InjuryLogService injuryLogService) {
 		this.injuryLogService = injuryLogService;
+	}
+
+	@GetMapping
+	public ResponseEntity<List<InjuryLogResponse>> getInjuryLogs(
+		@AuthenticationPrincipal String email
+	) {
+		List<InjuryLogResponse> logs = injuryLogService.getInjuryLogsForUser(email);
+		return ResponseEntity.ok(logs);
 	}
 
 	@PostMapping

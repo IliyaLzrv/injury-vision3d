@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import BodyModel from '../components/body/BodyModel.jsx';
 import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
 import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
+import InjuryLogList from '../components/injury/InjuryLogList.jsx';
 import { BODY_PART_LABELS } from '../components/body/bodyParts.js';
 
 export default function BodyMapPage() {
 	const [selectedBodyPart, setSelectedBodyPart] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [successMessage, setSuccessMessage] = useState(null);
+	const [logListRefreshKey, setLogListRefreshKey] = useState(0);
 
 	function handleAddInjuryLog() {
 		setIsModalOpen(true);
@@ -17,6 +19,7 @@ export default function BodyMapPage() {
 	function handleInjuryLogSaved() {
 		const label = BODY_PART_LABELS[selectedBodyPart] ?? selectedBodyPart;
 		setSuccessMessage(`Injury log saved for ${label}.`);
+		setLogListRefreshKey((key) => key + 1);
 	}
 
 	return (
@@ -62,6 +65,8 @@ export default function BodyMapPage() {
 						{successMessage}
 					</p>
 				)}
+
+				<InjuryLogList refreshKey={logListRefreshKey} />
 
 				<p className="mt-8 rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
 					InjuryVision 3D is a sports self-tracking and recovery awareness tool. It

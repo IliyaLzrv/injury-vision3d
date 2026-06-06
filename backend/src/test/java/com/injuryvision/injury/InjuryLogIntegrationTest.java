@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -105,6 +106,70 @@ class InjuryLogIntegrationTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.message").value("Validation failed"))
 			.andExpect(jsonPath("$.errors.painLevel").value("Pain level must be at most 10"));
+	}
+
+	@Test
+	void getInjuryLogsWithValidJwtReturnsOwnLogs() throws Exception {
+		ObjectNode firstLog = validInjuryLogRequest();
+		ObjectNode secondLog = validInjuryLogRequest();
+		secondLog.put("bodyPart", "RIGHT_ANKLE");
+		secondLog.put("painLevel", 4);
+
+		mockMvc.perform(post("/api/injuries")
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(firstLog)))
+			.andExpect(status().isCreated());
+
+		mockMvc.perform(post("/api/injuries")
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(secondLog)))
+			.andExpect(status().isCreated());
+
+		mockMvc.perform(get("/api/injuries")
+				.header("Authorization", "Bearer " + token))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(2))
+			.andExpect(jsonPath("$[0].bodyPart").value("RIGHT_ANKLE"))
+			.andExpect(jsonPath("$[1].bodyPart").value("LEFT_KNEE"))
+			.andExpect(jsonPath("$[0].user").doesNotExist())
+			.andExpect(jsonPath("$[0].userId").doesNotExist());
+	}
+
+	@Test
+	void getInjuryLogsWithoutJwtFails() throws Exception {
+		mockMvc.perform(get("/api/injuries"))
+			.andExpect(status().isUnauthorized())
+			.andExpect(jsonPath("$.message").value("Unauthorized"));
+	}
+
+	@Test
+	void getInjuryLogsDoesNotReturnAnotherUsersLogs() throws Exception {
+		ObjectNode request = validInjuryLogRequest();
+
+		mockMvc.perform(post("/api/injuries")
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isCreated());
+
+		RegisterRequest otherUser = new RegisterRequest();
+		otherUser.setFullName("Alex Athlete");
+		otherUser.setEmail("alex@example.com");
+		otherUser.setPassword("secret123");
+
+		mockMvc.perform(post("/api/auth/register")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(otherUser)))
+			.andExpect(status().isCreated());
+
+		String otherToken = loginAndGetToken("alex@example.com", "secret123");
+
+		mockMvc.perform(get("/api/injuries")
+				.header("Authorization", "Bearer " + otherToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(0));
 	}
 
 	@Test

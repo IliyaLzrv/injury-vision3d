@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface InjuryLogRepository extends JpaRepository<InjuryLog, Long> {
 
-	List<InjuryLog> findByUserIdOrderByLogDateDesc(Long userId);
+	List<InjuryLog> findByUserIdOrderByCreatedAtDesc(Long userId);
 }

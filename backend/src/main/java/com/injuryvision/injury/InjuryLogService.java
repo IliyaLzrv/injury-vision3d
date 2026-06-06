@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class InjuryLogService {
@@ -38,5 +39,15 @@ public class InjuryLogService {
 		InjuryLog saved = injuryLogRepository.save(injuryLog);
 
 		return InjuryLogResponse.from(saved);
+	}
+
+	@Transactional(readOnly = true)
+	public List<InjuryLogResponse> getInjuryLogsForUser(String email) {
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(InvalidCredentialsException::new);
+
+		return injuryLogRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
+			.map(InjuryLogResponse::from)
+			.toList();
 	}
 }
