@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
 import BodyModel from '../components/body/BodyModel.jsx';
+import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import { BODY_PAIN_LEGEND } from '../components/body/bodyPainColors.js';
 import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
 import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
@@ -133,10 +134,7 @@ export default function BodyMapPage() {
 					onRefresh={refreshInjuryLogs}
 				/>
 
-				<p className="mt-8 rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
-					InjuryVision 3D is a sports self-tracking and recovery awareness tool. It
-					does not provide medical diagnosis.
-				</p>
+				<ProductDisclaimer className="mt-8" />
 			</div>
 
 			<AddInjuryLogModal

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function DashboardPage() {
@@ -25,10 +26,7 @@ export default function DashboardPage() {
 					You are signed in as {user?.email}
 				</p>
 
-				<p className="mt-6 rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-300">
-					InjuryVision 3D is a sports self-tracking and recovery awareness tool.
-					It does not provide medical diagnosis.
-				</p>
+				<ProductDisclaimer className="mt-6" />
 
 				<div className="mt-8 grid gap-4 sm:grid-cols-2">
 					<Link

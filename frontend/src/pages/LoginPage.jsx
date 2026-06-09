@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function LoginPage() {
@@ -41,7 +42,7 @@ export default function LoginPage() {
 	}
 
 	return (
-		<div className="flex min-h-dvh items-center justify-center bg-slate-950 px-6 py-12 text-slate-100">
+		<div className="flex min-h-dvh flex-col items-center justify-center bg-slate-950 px-6 py-12 text-slate-100">
 			<div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/60 p-8 shadow-xl">
 				<h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
 				<p className="mt-2 text-sm text-slate-400">
@@ -113,6 +114,8 @@ export default function LoginPage() {
 					</Link>
 				</p>
 			</div>
+
+			<ProductDisclaimer className="mt-6 w-full max-w-md" />
 		</div>
 	);
 }
