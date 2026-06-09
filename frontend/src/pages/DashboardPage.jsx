@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
+import PainTrendChart from '../components/dashboard/PainTrendChart.jsx';
 import RecoveryOverviewCards from '../components/dashboard/RecoveryOverviewCards.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -28,6 +29,8 @@ export default function DashboardPage() {
 				<ProductDisclaimer className="mt-6" />
 
 				<RecoveryOverviewCards />
+
+				<PainTrendChart />
 
 				<div className="mt-8 grid gap-4 sm:grid-cols-2">
 					<Link
