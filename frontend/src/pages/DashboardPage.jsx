@@ -1,16 +1,24 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import PainTrendChart from '../components/dashboard/PainTrendChart.jsx';
 import RecoveryOverviewCards from '../components/dashboard/RecoveryOverviewCards.jsx';
+import TrainingLoadForm from '../components/training/TrainingLoadForm.jsx';
+import TrainingLoadSummary from '../components/training/TrainingLoadSummary.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function DashboardPage() {
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
+	const [trainingRefreshKey, setTrainingRefreshKey] = useState(0);
 
 	function handleLogout() {
 		logout();
 		navigate('/login');
+	}
+
+	function handleTrainingSaved() {
+		setTrainingRefreshKey((key) => key + 1);
 	}
 
 	return (
@@ -31,6 +39,20 @@ export default function DashboardPage() {
 				<RecoveryOverviewCards />
 
 				<PainTrendChart />
+
+				<section className="mt-8">
+					<h2 className="text-lg font-semibold text-slate-900">
+						Training load analysis
+					</h2>
+					<p className="mt-1 text-sm text-slate-500">
+						Self-tracked training context to support recovery awareness.
+					</p>
+
+					<div className="mt-4 grid gap-4 lg:grid-cols-2">
+						<TrainingLoadForm onSuccess={handleTrainingSaved} />
+						<TrainingLoadSummary refreshKey={trainingRefreshKey} />
+					</div>
+				</section>
 
 				<div className="mt-8 grid gap-4 sm:grid-cols-2">
 					<Link
