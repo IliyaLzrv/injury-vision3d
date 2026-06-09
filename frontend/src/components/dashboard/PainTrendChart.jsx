@@ -11,25 +11,13 @@ import {
 } from 'recharts';
 import { injuryApi } from '../../api/injuryApi.js';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
+import { getLogTimestamp } from '../report/weeklyReportUtils.js';
 import {
 	formatLabel,
 	formatLogDate,
 	INJURY_TYPE_LABELS,
 	RECOVERY_STATUS_LABELS,
 } from '../injury/injuryLogUtils.js';
-
-function getLogTimestamp(log) {
-	if (log.logDate) {
-		const [year, month, day] = log.logDate.split('-').map(Number);
-		return new Date(year, month - 1, day).getTime();
-	}
-
-	if (log.createdAt) {
-		return new Date(log.createdAt).getTime();
-	}
-
-	return 0;
-}
 
 function buildChartData(logs) {
 	return [...logs]
@@ -68,12 +56,22 @@ function PainTrendTooltip({ active, payload }) {
 	);
 }
 
-export default function PainTrendChart() {
-	const [logs, setLogs] = useState([]);
-	const [loading, setLoading] = useState(true);
+export default function PainTrendChart({
+	logs: externalLogs,
+	title = 'Pain trend',
+	description = 'Self-tracked pain data over time for recovery awareness and weekly reflection.',
+	className = 'mt-8',
+	showEmptyLink = true,
+}) {
+	const [internalLogs, setInternalLogs] = useState([]);
+	const [loading, setLoading] = useState(externalLogs === undefined);
 	const [errorMessage, setErrorMessage] = useState('');
 
 	useEffect(() => {
+		if (externalLogs !== undefined) {
+			return undefined;
+		}
+
 		let cancelled = false;
 
 		async function loadLogs() {
@@ -83,11 +81,11 @@ export default function PainTrendChart() {
 			try {
 				const data = await injuryApi.getInjuryLogs();
 				if (!cancelled) {
-					setLogs(Array.isArray(data) ? data : []);
+					setInternalLogs(Array.isArray(data) ? data : []);
 				}
 			} catch (error) {
 				if (!cancelled) {
-					setLogs([]);
+					setInternalLogs([]);
 					setErrorMessage(error.message || 'Failed to load pain trend data.');
 				}
 			} finally {
@@ -102,17 +100,17 @@ export default function PainTrendChart() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [externalLogs]);
 
+	const logs = externalLogs ?? internalLogs;
 	const chartData = useMemo(() => buildChartData(logs), [logs]);
 
 	return (
-		<section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-			<h2 className="text-lg font-semibold text-slate-900">Pain trend</h2>
-			<p className="mt-1 text-sm text-slate-500">
-				Self-tracked pain data over time for recovery awareness and weekly
-				reflection.
-			</p>
+		<section
+			className={`rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60 ${className}`.trim()}
+		>
+			<h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+			<p className="mt-1 text-sm text-slate-500">{description}</p>
 
 			{loading && (
 				<p className="mt-6 text-sm text-slate-500">Loading pain trend…</p>
@@ -127,15 +125,16 @@ export default function PainTrendChart() {
 			{!loading && !errorMessage && chartData.length === 0 && (
 				<div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
 					<p className="text-sm text-slate-500">
-						No self-tracked pain data yet. Add injury logs on the body map to
-						see your trend here.
+						No self-tracked pain data for this period yet.
 					</p>
-					<Link
-						to="/body-map"
-						className="mt-4 inline-flex rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-500"
-					>
-						Open 3D Body Map
-					</Link>
+					{showEmptyLink && (
+						<Link
+							to="/body-map"
+							className="mt-4 inline-flex rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-500"
+						>
+							Open 3D Body Map
+						</Link>
+					)}
 				</div>
 			)}
 

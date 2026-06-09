@@ -5,6 +5,7 @@ import BodyMapPage from '../pages/BodyMapPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
+import WeeklyReportPage from '../pages/WeeklyReportPage.jsx';
 
 function RootRedirect() {
 	const { isAuthenticated, loading } = useAuth();
@@ -29,6 +30,7 @@ export default function AppRoutes() {
 			<Route element={<ProtectedRoute />}>
 				<Route path="/dashboard" element={<DashboardPage />} />
 				<Route path="/body-map" element={<BodyMapPage />} />
+				<Route path="/reports/weekly" element={<WeeklyReportPage />} />
 			</Route>
 
 			<Route path="/" element={<RootRedirect />} />
