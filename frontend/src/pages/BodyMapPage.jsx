@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
 import BodyModel from '../components/body/BodyModel.jsx';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
@@ -9,6 +8,7 @@ import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
 import InjuryLogList from '../components/injury/InjuryLogList.jsx';
 import InjuryTimeline from '../components/injury/InjuryTimeline.jsx';
 import { BODY_PART_LABELS } from '../components/body/bodyParts.js';
+import PageHeader from '../components/layout/PageHeader.jsx';
 
 export default function BodyMapPage() {
 	const [selectedBodyPart, setSelectedBodyPart] = useState(null);
@@ -65,77 +65,67 @@ export default function BodyMapPage() {
 	}
 
 	return (
-		<div className="min-h-dvh bg-slate-950 text-slate-100">
-			<div className="mx-auto max-w-6xl px-6 py-10 sm:py-12">
-				<Link
-					to="/dashboard"
-					className="inline-flex text-sm text-slate-400 transition hover:text-emerald-300"
-				>
-					← Back to dashboard
-				</Link>
+		<>
+			<PageHeader
+				eyebrow="Recovery awareness"
+				title="3D Body Map"
+				description="Visually track self-tracked pain and recovery areas on the interactive body model."
+				badge="Interactive"
+			/>
 
-				<h1 className="mt-6 text-3xl font-semibold tracking-tight sm:text-4xl">
-					3D Body Map
-				</h1>
-				<p className="mt-3 max-w-2xl text-sm text-slate-400 sm:text-base">
-					This basic 3D body model will be used to visually track pain and injury
-					areas.
-				</p>
-
-				<div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-start">
-					<div>
-						<BodyModel
-							onBodyPartSelect={setSelectedBodyPart}
-							selectedBodyPart={selectedBodyPart}
-							injuryLogs={injuryLogs}
-						/>
-						<div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-							{BODY_PAIN_LEGEND.map((item) => (
-								<div key={item.key} className="flex items-center gap-1.5 text-xs text-slate-400">
-									<span
-										className="h-2.5 w-2.5 rounded-full border border-slate-700"
-										style={{ backgroundColor: item.color }}
-										aria-hidden="true"
-									/>
-									<span>{item.label}</span>
-								</div>
-							))}
-						</div>
-						<p className="mt-3 text-center text-xs text-slate-500 lg:text-left">
-							Drag to rotate · Scroll to zoom · Click a body part to select
-						</p>
-					</div>
-
-					<SelectedBodyPartPanel
+			<div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-start">
+				<div>
+					<BodyModel
+						onBodyPartSelect={setSelectedBodyPart}
 						selectedBodyPart={selectedBodyPart}
-						onAddInjuryLog={handleAddInjuryLog}
+						injuryLogs={injuryLogs}
 					/>
+					<div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+						{BODY_PAIN_LEGEND.map((item) => (
+							<div key={item.key} className="flex items-center gap-1.5 text-xs text-slate-500">
+								<span
+									className="h-2.5 w-2.5 rounded-full border border-slate-300"
+									style={{ backgroundColor: item.color }}
+									aria-hidden="true"
+								/>
+								<span>{item.label}</span>
+							</div>
+						))}
+					</div>
+					<p className="mt-3 text-center text-xs text-slate-500 lg:text-left">
+						Drag to rotate · Scroll to zoom · Click a body part to select
+					</p>
 				</div>
 
-				{successMessage && (
-					<p
-						role="status"
-						className="mt-4 rounded-lg border border-emerald-800/50 bg-emerald-950/30 px-4 py-3 text-sm text-emerald-200"
-					>
-						{successMessage}
-					</p>
-				)}
-
-				<InjuryTimeline
-					logs={injuryLogs}
-					loading={logsLoading}
-					errorMessage={logsError}
+				<SelectedBodyPartPanel
+					selectedBodyPart={selectedBodyPart}
+					onAddInjuryLog={handleAddInjuryLog}
 				/>
-
-				<InjuryLogList
-					logs={injuryLogs}
-					loading={logsLoading}
-					errorMessage={logsError}
-					onRefresh={refreshInjuryLogs}
-				/>
-
-				<ProductDisclaimer className="mt-8" />
 			</div>
+
+			{successMessage && (
+				<p
+					role="status"
+					className="mt-4 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800"
+				>
+					{successMessage}
+				</p>
+			)}
+
+			<InjuryTimeline
+				logs={injuryLogs}
+				loading={logsLoading}
+				errorMessage={logsError}
+			/>
+
+			<InjuryLogList
+				logs={injuryLogs}
+				loading={logsLoading}
+				errorMessage={logsError}
+				onRefresh={refreshInjuryLogs}
+			/>
+
+			<ProductDisclaimer className="mt-8" />
 
 			<AddInjuryLogModal
 				isOpen={isModalOpen}
@@ -143,6 +133,6 @@ export default function BodyMapPage() {
 				selectedBodyPart={selectedBodyPart}
 				onSuccess={handleInjuryLogSaved}
 			/>
-		</div>
+		</>
 	);
 }
