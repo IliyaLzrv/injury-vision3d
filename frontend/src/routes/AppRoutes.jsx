@@ -5,6 +5,7 @@ import BodyMapPage from '../pages/BodyMapPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
+import StartPage from '../pages/StartPage.jsx';
 import WeeklyReportPage from '../pages/WeeklyReportPage.jsx';
 
 function RootRedirect() {
@@ -12,13 +13,17 @@ function RootRedirect() {
 
 	if (loading) {
 		return (
-			<div className="flex min-h-dvh items-center justify-center bg-slate-950 text-slate-300">
+			<div className="flex min-h-dvh items-center justify-center bg-slate-50 text-slate-500">
 				<p className="text-sm">Loading...</p>
 			</div>
 		);
 	}
 
-	return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
+	if (isAuthenticated) {
+		return <Navigate to="/dashboard" replace />;
+	}
+
+	return <StartPage />;
 }
 
 export default function AppRoutes() {

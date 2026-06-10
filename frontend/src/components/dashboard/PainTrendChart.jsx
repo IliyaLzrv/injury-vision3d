@@ -58,13 +58,14 @@ function PainTrendTooltip({ active, payload }) {
 
 export default function PainTrendChart({
 	logs: externalLogs,
+	loading: externalLoading = false,
 	title = 'Pain trend',
 	description = 'Self-tracked pain data over time for recovery awareness and weekly reflection.',
 	className = 'mt-8',
 	showEmptyLink = true,
 }) {
 	const [internalLogs, setInternalLogs] = useState([]);
-	const [loading, setLoading] = useState(externalLogs === undefined);
+	const [internalLoading, setInternalLoading] = useState(externalLogs === undefined);
 	const [errorMessage, setErrorMessage] = useState('');
 
 	useEffect(() => {
@@ -75,7 +76,7 @@ export default function PainTrendChart({
 		let cancelled = false;
 
 		async function loadLogs() {
-			setLoading(true);
+			setInternalLoading(true);
 			setErrorMessage('');
 
 			try {
@@ -90,7 +91,7 @@ export default function PainTrendChart({
 				}
 			} finally {
 				if (!cancelled) {
-					setLoading(false);
+					setInternalLoading(false);
 				}
 			}
 		}
@@ -103,6 +104,8 @@ export default function PainTrendChart({
 	}, [externalLogs]);
 
 	const logs = externalLogs ?? internalLogs;
+	const loading =
+		externalLogs !== undefined ? externalLoading : internalLoading;
 	const chartData = useMemo(() => buildChartData(logs), [logs]);
 
 	return (

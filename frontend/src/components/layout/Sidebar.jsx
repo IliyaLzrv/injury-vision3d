@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { cn } from '../ui/buttonStyles.js';
 
 const mainNavItems = [
-	{ label: 'Start', to: null, placeholder: true },
+	{ label: 'Start', to: '/' },
 	{ label: '3D Body Map', to: '/body-map' },
 	{ label: 'Dashboard', to: '/dashboard' },
 	{ label: 'Injury History', to: null, placeholder: true },
@@ -60,7 +60,11 @@ function NavItem({ item, isAuthenticated }) {
 	}
 
 	return (
-		<NavLink to={item.to} className={navLinkClassName} end={item.to === '/dashboard'}>
+		<NavLink
+			to={item.to}
+			className={navLinkClassName}
+			end={item.to === '/dashboard' || item.to === '/'}
+		>
 			{item.label}
 		</NavLink>
 	);
