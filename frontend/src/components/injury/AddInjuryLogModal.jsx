@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { injuryApi } from '../../api/injuryApi.js';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
+import { buttonStyles } from '../ui/buttonStyles.js';
 
 const INJURY_TYPES = [
 	{ value: 'PAIN', label: 'Pain' },
@@ -17,7 +18,7 @@ const RECOVERY_STATUSES = [
 ];
 
 const inputClassName =
-	'w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none ring-emerald-500/0 focus:ring-2';
+	'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-sky-400/0 focus:border-sky-300 focus:ring-2';
 
 export default function AddInjuryLogModal({
 	isOpen,
@@ -97,7 +98,7 @@ export default function AddInjuryLogModal({
 
 	return (
 		<div
-			className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 py-8"
+			className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-8 backdrop-blur-sm"
 			role="presentation"
 			onClick={() => {
 				if (!submitting) {
@@ -109,38 +110,67 @@ export default function AddInjuryLogModal({
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="add-injury-log-title"
-				className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/95 p-6 shadow-xl"
+				className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-300/40"
 				onClick={(event) => event.stopPropagation()}
 			>
 				<div className="flex items-start justify-between gap-4">
 					<div>
 						<h2
 							id="add-injury-log-title"
-							className="text-xl font-semibold text-slate-100"
+							className="text-xl font-semibold text-slate-900"
 						>
 							Add Injury Log
 						</h2>
-						<p className="mt-1 text-sm text-slate-400">
-							Tracking for{' '}
-							<span className="font-medium text-slate-200">{bodyPartLabel}</span>
+						<p className="mt-1 text-sm text-slate-500">
+							Logging for:{' '}
+							<span className="font-medium text-slate-800">{bodyPartLabel}</span>
 						</p>
 					</div>
 					<button
 						type="button"
 						onClick={onClose}
 						disabled={submitting}
-						className="rounded-lg border border-slate-700 px-2 py-1 text-sm text-slate-400 transition hover:text-slate-200 disabled:opacity-50"
+						className="rounded-lg border border-slate-200 px-2 py-1 text-sm text-slate-400 transition hover:bg-slate-50 hover:text-slate-600 disabled:opacity-50"
 						aria-label="Close"
 					>
-						Close
+						×
 					</button>
 				</div>
 
-				<form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+				<form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+					<div>
+						<div className="mb-2 flex items-center justify-between gap-3">
+							<label
+								htmlFor="painLevel"
+								className="text-sm font-medium text-slate-700"
+							>
+								Pain level
+							</label>
+							<span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-sm font-semibold text-sky-700">
+								{painLevel}/10
+							</span>
+						</div>
+						<input
+							id="painLevel"
+							type="range"
+							min={1}
+							max={10}
+							step={1}
+							required
+							value={painLevel}
+							onChange={(event) => setPainLevel(event.target.value)}
+							className="h-2 w-full cursor-pointer accent-sky-500"
+						/>
+						<div className="mt-1 flex justify-between text-[11px] text-slate-400">
+							<span>1 — mild</span>
+							<span>10 — severe</span>
+						</div>
+					</div>
+
 					<div>
 						<label
 							htmlFor="injuryType"
-							className="mb-1 block text-sm font-medium text-slate-300"
+							className="mb-1 block text-sm font-medium text-slate-700"
 						>
 							Injury type
 						</label>
@@ -161,29 +191,10 @@ export default function AddInjuryLogModal({
 
 					<div>
 						<label
-							htmlFor="painLevel"
-							className="mb-1 block text-sm font-medium text-slate-300"
-						>
-							Pain level (1–10)
-						</label>
-						<input
-							id="painLevel"
-							type="number"
-							min={1}
-							max={10}
-							required
-							value={painLevel}
-							onChange={(event) => setPainLevel(event.target.value)}
-							className={inputClassName}
-						/>
-					</div>
-
-					<div>
-						<label
 							htmlFor="recoveryStatus"
-							className="mb-1 block text-sm font-medium text-slate-300"
+							className="mb-1 block text-sm font-medium text-slate-700"
 						>
-							Recovery status
+							Recovery progress
 						</label>
 						<select
 							id="recoveryStatus"
@@ -203,9 +214,9 @@ export default function AddInjuryLogModal({
 					<div>
 						<label
 							htmlFor="notes"
-							className="mb-1 block text-sm font-medium text-slate-300"
+							className="mb-1 block text-sm font-medium text-slate-700"
 						>
-							Notes <span className="text-slate-500">(optional)</span>
+							Notes <span className="text-slate-400">(optional)</span>
 						</label>
 						<textarea
 							id="notes"
@@ -219,13 +230,13 @@ export default function AddInjuryLogModal({
 					</div>
 
 					{errorMessage && (
-						<p className="rounded-lg border border-red-800/50 bg-red-950/30 px-3 py-2 text-sm text-red-200">
+						<p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
 							{errorMessage}
 						</p>
 					)}
 
-					<p className="text-xs text-slate-500">
-						For sports self-tracking and recovery awareness only — not medical
+					<p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+						This log is for self-tracking and recovery awareness, not medical
 						diagnosis.
 					</p>
 
@@ -234,16 +245,16 @@ export default function AddInjuryLogModal({
 							type="button"
 							onClick={onClose}
 							disabled={submitting}
-							className="flex-1 rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800 disabled:opacity-50"
+							className={`${buttonStyles.secondary} flex-1`}
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
 							disabled={submitting}
-							className="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
+							className={`${buttonStyles.teal} flex-1`}
 						>
-							{submitting ? 'Saving…' : 'Save log'}
+							{submitting ? 'Saving…' : 'Save Log'}
 						</button>
 					</div>
 				</form>

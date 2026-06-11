@@ -1,16 +1,106 @@
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import Badge from '../ui/Badge.jsx';
+import Card from '../ui/Card.jsx';
+import { buttonStyles } from '../ui/buttonStyles.js';
+import {
+	formatLabel,
+	formatLogDate,
+	INJURY_TYPE_LABELS,
+	RECOVERY_STATUS_LABELS,
+} from '../injury/injuryLogUtils.js';
+import { getLogTimestamp } from '../report/weeklyReportUtils.js';
 import { BODY_PART_LABELS } from './bodyParts.js';
+import { buildLatestLogByBodyPart } from './bodyPainColors.js';
+
+function getStatusMeta(log) {
+	if (!log) {
+		return { label: 'No Data', variant: 'muted' };
+	}
+
+	if (log.recoveryStatus === 'RECOVERED') {
+		return { label: 'Healthy / Recovered', variant: 'green' };
+	}
+
+	if (log.recoveryStatus === 'RECOVERING') {
+		return { label: 'Recovering', variant: 'indigo' };
+	}
+
+	const painLevel = Number(log.painLevel);
+	if (painLevel >= 7) {
+		return { label: 'High Pain', variant: 'red' };
+	}
+	if (painLevel >= 4) {
+		return { label: 'Moderate Pain', variant: 'orange' };
+	}
+
+	return { label: 'Light Pain', variant: 'green' };
+}
+
+function PainTrendMini({ logs }) {
+	const trend = useMemo(
+		() =>
+			[...logs]
+				.sort((a, b) => getLogTimestamp(a) - getLogTimestamp(b))
+				.slice(-7),
+		[logs]
+	);
+
+	if (trend.length === 0) {
+		return (
+			<div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+				<p className="text-xs font-medium text-slate-500">Pain trend</p>
+				<p className="mt-2 text-sm text-slate-400">No logs for this area yet</p>
+			</div>
+		);
+	}
+
+	return (
+		<div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+			<p className="text-xs font-medium text-slate-500">Pain trend</p>
+			<div className="mt-3 flex h-12 items-end gap-1.5">
+				{trend.map((log) => (
+					<div
+						key={log.id}
+						className="flex-1 rounded-sm bg-sky-400/90"
+						style={{ height: `${Math.max(12, log.painLevel * 10)}%` }}
+						title={`${formatLogDate(log)}: ${log.painLevel}/10`}
+					/>
+				))}
+			</div>
+			<p className="mt-2 text-[11px] text-slate-400">
+				Self-tracked pain levels over recent logs
+			</p>
+		</div>
+	);
+}
 
 export default function SelectedBodyPartPanel({
 	selectedBodyPart,
+	injuryLogs = [],
 	onAddInjuryLog,
 }) {
+	const latestLogByPart = useMemo(
+		() => buildLatestLogByBodyPart(injuryLogs),
+		[injuryLogs]
+	);
+
+	const partLogs = useMemo(() => {
+		if (!selectedBodyPart) {
+			return [];
+		}
+
+		return injuryLogs
+			.filter((log) => log.bodyPart === selectedBodyPart)
+			.sort((a, b) => getLogTimestamp(b) - getLogTimestamp(a));
+	}, [injuryLogs, selectedBodyPart]);
+
 	if (!selectedBodyPart) {
 		return (
-			<aside className="flex h-full min-h-[280px] flex-col rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-				<h2 className="text-sm font-medium text-slate-200">Body part details</h2>
-				<div className="mt-6 flex flex-1 flex-col items-center justify-center text-center">
+			<Card className="flex min-h-[420px] flex-col">
+				<div className="flex flex-1 flex-col items-center justify-center text-center">
 					<div
-						className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-700 bg-slate-800/60 text-slate-500"
+						className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-sky-50 text-sky-500"
 						aria-hidden="true"
 					>
 						<svg
@@ -19,7 +109,7 @@ export default function SelectedBodyPartPanel({
 							fill="none"
 							stroke="currentColor"
 							strokeWidth="1.5"
-							className="h-6 w-6"
+							className="h-7 w-7"
 						>
 							<path
 								strokeLinecap="round"
@@ -28,46 +118,125 @@ export default function SelectedBodyPartPanel({
 							/>
 						</svg>
 					</div>
-					<p className="mt-4 text-base font-medium text-slate-300">
+					<p className="mt-5 text-lg font-semibold text-slate-900">
 						Select a body part
 					</p>
-					<p className="mt-2 max-w-[220px] text-sm text-slate-500">
-						Click a body part on the 3D model to view details and add an injury
-						log.
+					<p className="mt-2 max-w-[260px] text-sm leading-relaxed text-slate-500">
+						Click a body zone on the model to view status and add a pain log.
 					</p>
 				</div>
-			</aside>
+			</Card>
 		);
 	}
 
 	const label = BODY_PART_LABELS[selectedBodyPart] ?? selectedBodyPart;
+	const latestLog = latestLogByPart[selectedBodyPart];
+	const status = getStatusMeta(latestLog);
 
 	return (
-		<aside className="flex h-full min-h-[280px] flex-col rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-			<p className="text-xs uppercase tracking-wide text-slate-500">
-				Selected body part
-			</p>
-			<h2 className="mt-1 text-xl font-semibold text-slate-100">{label}</h2>
+		<Card className="flex flex-col">
+			<div className="flex flex-wrap items-start justify-between gap-2">
+				<div>
+					<p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+						Selected body part
+					</p>
+					<h2 className="mt-1 text-xl font-semibold text-slate-900">{label}</h2>
+				</div>
+				<Badge variant={status.variant}>{status.label}</Badge>
+			</div>
 
-			<p className="mt-4 text-sm leading-relaxed text-slate-400">
-				Track pain level, recovery status, and personal notes for this body part
-				over time.
-			</p>
+			<dl className="mt-5 grid grid-cols-2 gap-3">
+				<div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+					<dt className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+						Pain level
+					</dt>
+					<dd className="mt-1 text-lg font-semibold text-slate-900">
+						{latestLog ? `${latestLog.painLevel}/10` : '—'}
+					</dd>
+				</div>
+				<div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+					<dt className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+						Recovery status
+					</dt>
+					<dd className="mt-1 text-sm font-semibold text-slate-900">
+						{latestLog
+							? formatLabel(latestLog.recoveryStatus, RECOVERY_STATUS_LABELS)
+							: '—'}
+					</dd>
+				</div>
+				<div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+					<dt className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+						Last activity
+					</dt>
+					<dd className="mt-1 text-sm font-medium text-slate-700">
+						{latestLog
+							? formatLabel(latestLog.injuryType, INJURY_TYPE_LABELS)
+							: '—'}
+					</dd>
+				</div>
+				<div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+					<dt className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+						Last updated
+					</dt>
+					<dd className="mt-1 text-sm font-medium text-slate-700">
+						{latestLog ? formatLogDate(latestLog) : '—'}
+					</dd>
+				</div>
+			</dl>
 
-			<div className="mt-6">
+			<div className="mt-4">
+				<PainTrendMini logs={partLogs} />
+			</div>
+
+			<div className="mt-5 space-y-2">
 				<button
 					type="button"
 					onClick={() => onAddInjuryLog?.(selectedBodyPart)}
-					className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+					className={`${buttonStyles.teal} w-full`}
 				>
-					Add Injury Log
+					+ Add New Log
 				</button>
+				<div className="grid grid-cols-2 gap-2">
+					<a
+						href="#injury-history"
+						className={`${buttonStyles.secondary} w-full text-center`}
+					>
+						View Full History
+					</a>
+					<Link
+						to="/reports/weekly"
+						className={`${buttonStyles.secondary} w-full text-center`}
+					>
+						View Weekly Report
+					</Link>
+				</div>
 			</div>
 
-			<p className="mt-auto pt-6 text-xs leading-relaxed text-slate-500">
-				InjuryVision 3D is for sports self-tracking and recovery awareness only. It
-				does not provide medical diagnosis.
+			{partLogs.length > 0 && (
+				<div className="mt-6 border-t border-slate-100 pt-5">
+					<h3 className="text-sm font-semibold text-slate-900">Recent logs</h3>
+					<ul className="mt-3 space-y-2">
+						{partLogs.slice(0, 3).map((log) => (
+							<li
+								key={log.id}
+								className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+							>
+								<div>
+									<p className="text-xs text-slate-500">{formatLogDate(log)}</p>
+									<p className="text-sm font-medium text-slate-800">
+										{formatLabel(log.injuryType, INJURY_TYPE_LABELS)}
+									</p>
+								</div>
+								<Badge variant="muted">Pain {log.painLevel}/10</Badge>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+
+			<p className="mt-6 text-xs leading-relaxed text-slate-400">
+				Sports self-tracking and recovery awareness only — not medical diagnosis.
 			</p>
-		</aside>
+		</Card>
 	);
 }
