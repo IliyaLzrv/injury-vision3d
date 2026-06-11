@@ -42,8 +42,12 @@ export default function AppRoutes() {
 			<Route
 				path="*"
 				element={
-					<div className="flex min-h-dvh items-center justify-center bg-slate-950 text-slate-400">
-						<p>Page not found.</p>
+					<div
+						className="flex min-h-dvh flex-col items-center justify-center gap-2 px-6 text-slate-500"
+						style={{ backgroundColor: '#F8FAFC' }}
+					>
+						<p className="text-lg font-medium text-slate-900">Page not found</p>
+						<p className="text-sm">This prototype screen is not available yet.</p>
 					</div>
 				}
 			/>

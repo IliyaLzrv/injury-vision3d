@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
+import AuthPageLayout, {
+	authInputClassName,
+} from '../components/layout/AuthPageLayout.jsx';
+import { buttonStyles } from '../components/ui/buttonStyles.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function LoginPage() {
@@ -42,80 +45,72 @@ export default function LoginPage() {
 	}
 
 	return (
-		<div className="flex min-h-dvh flex-col items-center justify-center bg-slate-950 px-6 py-12 text-slate-100">
-			<div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/60 p-8 shadow-xl">
-				<h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-				<p className="mt-2 text-sm text-slate-400">
-					Welcome back to InjuryVision 3D
-				</p>
-
-				{infoMessage && (
-					<p className="mt-4 rounded-lg border border-emerald-800/50 bg-emerald-950/40 px-3 py-2 text-sm text-emerald-300">
-						{infoMessage}
-					</p>
-				)}
-
-				<form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-					<div>
-						<label
-							htmlFor="email"
-							className="mb-1 block text-sm font-medium text-slate-300"
-						>
-							Email
-						</label>
-						<input
-							id="email"
-							type="email"
-							required
-							value={email}
-							onChange={(event) => setEmail(event.target.value)}
-							className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none ring-emerald-500/0 focus:ring-2"
-							placeholder="you@example.com"
-						/>
-					</div>
-
-					<div>
-						<label
-							htmlFor="password"
-							className="mb-1 block text-sm font-medium text-slate-300"
-						>
-							Password
-						</label>
-						<input
-							id="password"
-							type="password"
-							required
-							value={password}
-							onChange={(event) => setPassword(event.target.value)}
-							className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none ring-emerald-500/0 focus:ring-2"
-							placeholder="••••••••"
-						/>
-					</div>
-
-					{errorMessage && (
-						<p className="rounded-lg border border-red-800/50 bg-red-950/40 px-3 py-2 text-sm text-red-300">
-							{errorMessage}
-						</p>
-					)}
-
-					<button
-						type="submit"
-						disabled={submitting}
-						className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
-					>
-						{submitting ? 'Signing in...' : 'Sign in'}
-					</button>
-				</form>
-
-				<p className="mt-6 text-center text-sm text-slate-400">
+		<AuthPageLayout
+			title="Sign in"
+			subtitle="Welcome back to InjuryVision 3D sports self-tracking"
+			footer={
+				<p className="mt-6 text-center text-sm text-slate-500">
 					No account yet?{' '}
-					<Link to="/register" className="text-emerald-400 hover:text-emerald-300">
+					<Link to="/register" className="font-medium text-sky-600 hover:text-sky-500">
 						Create one
 					</Link>
 				</p>
-			</div>
+			}
+		>
+			{infoMessage && (
+				<p className="mt-4 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-800">
+					{infoMessage}
+				</p>
+			)}
 
-			<ProductDisclaimer className="mt-6 w-full max-w-md" />
-		</div>
+			<form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+				<div>
+					<label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+						Email
+					</label>
+					<input
+						id="email"
+						type="email"
+						required
+						value={email}
+						onChange={(event) => setEmail(event.target.value)}
+						className={authInputClassName}
+						placeholder="you@example.com"
+					/>
+				</div>
+
+				<div>
+					<label
+						htmlFor="password"
+						className="mb-1 block text-sm font-medium text-slate-700"
+					>
+						Password
+					</label>
+					<input
+						id="password"
+						type="password"
+						required
+						value={password}
+						onChange={(event) => setPassword(event.target.value)}
+						className={authInputClassName}
+						placeholder="••••••••"
+					/>
+				</div>
+
+				{errorMessage && (
+					<p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+						{errorMessage}
+					</p>
+				)}
+
+				<button
+					type="submit"
+					disabled={submitting}
+					className={`${buttonStyles.primary} w-full`}
+				>
+					{submitting ? 'Signing in…' : 'Sign in'}
+				</button>
+			</form>
+		</AuthPageLayout>
 	);
 }

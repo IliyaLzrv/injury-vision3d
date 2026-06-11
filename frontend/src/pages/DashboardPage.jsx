@@ -171,7 +171,7 @@ export default function DashboardPage() {
 					</button>
 				</div>
 
-				<ProductDisclaimer />
+				<ProductDisclaimer variant="light" />
 			</div>
 		</>
 	);

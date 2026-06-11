@@ -34,7 +34,7 @@ function getStatusMeta(log) {
 		return { label: 'Moderate Pain', variant: 'orange' };
 	}
 
-	return { label: 'Light Pain', variant: 'green' };
+	return { label: 'Light Pain', variant: 'lime' };
 }
 
 function PainTrendMini({ logs }) {
@@ -235,7 +235,7 @@ export default function SelectedBodyPartPanel({
 			)}
 
 			<p className="mt-6 text-xs leading-relaxed text-slate-400">
-				Sports self-tracking and recovery awareness only — not medical diagnosis.
+				Sports self-tracking and recovery awareness only — not clinical guidance.
 			</p>
 		</Card>
 	);

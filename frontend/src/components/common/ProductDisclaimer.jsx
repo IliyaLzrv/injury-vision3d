@@ -1,19 +1,21 @@
 const DISCLAIMER_TEXT =
-	'InjuryVision 3D is a sports self-tracking and recovery awareness tool. It does not provide medical diagnosis, treatment advice, or injury prediction. For serious or persistent pain, users should consult a qualified professional.';
+	'InjuryVision 3D is a sports self-tracking and recovery awareness tool. It offers self-tracked data and general recovery reflection only — not clinical guidance or medical advice. For serious or persistent pain, consult a qualified professional.';
 
 const VARIANT_STYLES = {
-	dark: 'rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm leading-relaxed text-slate-300',
+	dark: 'rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-600',
 	light: 'rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-600',
-	pdf: 'rounded-xl border border-[#fde68a] bg-[#fef9c3] p-4 text-sm leading-relaxed text-[#854d0e]',
+	pdf: 'rounded-xl border p-4 text-sm leading-relaxed',
 };
 
-export default function ProductDisclaimer({ className = '', variant = 'dark' }) {
+export default function ProductDisclaimer({ className = '', variant = 'light' }) {
+	const isPdf = variant === 'pdf';
+
 	return (
 		<p
 			role="note"
-			className={`${VARIANT_STYLES[variant] ?? VARIANT_STYLES.dark} ${className}`.trim()}
+			className={`${VARIANT_STYLES[variant] ?? VARIANT_STYLES.light} ${className}`.trim()}
 			style={
-				variant === 'pdf'
+				isPdf
 					? {
 							borderColor: '#fde68a',
 							backgroundColor: '#fef9c3',

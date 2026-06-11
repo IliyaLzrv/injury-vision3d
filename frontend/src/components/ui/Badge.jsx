@@ -5,6 +5,7 @@ const variants = {
 	primary: 'bg-sky-50 text-sky-700',
 	teal: 'bg-teal-50 text-teal-700',
 	green: 'bg-green-50 text-green-700',
+	lime: 'bg-lime-50 text-lime-700',
 	orange: 'bg-orange-50 text-orange-700',
 	red: 'bg-red-50 text-red-700',
 	indigo: 'bg-indigo-50 text-indigo-600',

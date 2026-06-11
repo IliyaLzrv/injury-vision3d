@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { buttonStyles } from '../ui/buttonStyles.js';
 
 const PDF_FILENAME = 'injuryvision-weekly-report.pdf';
 
@@ -434,12 +435,12 @@ export default function ExportReportButton({
 	}
 
 	return (
-		<div className="flex shrink-0 flex-col items-end gap-2">
+		<div className="flex w-full shrink-0 flex-col items-stretch gap-2 sm:w-auto sm:items-end">
 			<button
 				type="button"
 				onClick={handleExport}
 				disabled={disabled || exporting}
-				className="rounded-lg border border-teal-200 bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-teal-500 disabled:cursor-not-allowed disabled:opacity-50"
+				className={buttonStyles.primary}
 			>
 				{exporting ? 'Exporting…' : 'Export PDF'}
 			</button>

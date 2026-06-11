@@ -106,7 +106,7 @@ export default function WeeklyReportPage() {
 
 	return (
 		<>
-			<div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
 				<PageHeader
 					title="Weekly Recovery Report"
 					badge="High-Fidelity Prototype"
@@ -118,7 +118,7 @@ export default function WeeklyReportPage() {
 			<div
 				ref={reportRef}
 				data-pdf-report="true"
-				className="space-y-6 rounded-2xl border border-slate-200 p-6 shadow-sm"
+				className="space-y-6 rounded-2xl border border-slate-200 p-4 shadow-sm sm:p-6"
 				style={PDF_SAFE_WRAPPER_STYLE}
 			>
 				<WeeklyReportPdfHeader

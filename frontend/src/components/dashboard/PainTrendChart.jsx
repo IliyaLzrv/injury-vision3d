@@ -162,8 +162,8 @@ export default function PainTrendChart({
 			)}
 
 			{!loading && !errorMessage && chartData.length > 0 && (
-				<div className="mt-6 h-72 w-full">
-					<ResponsiveContainer width="100%" height="100%">
+				<div className="mt-6 h-72 w-full min-w-0 overflow-x-auto">
+					<ResponsiveContainer width="100%" height="100%" minWidth={280}>
 						<LineChart
 							data={chartData}
 							margin={{ top: 8, right: 16, left: 0, bottom: 8 }}

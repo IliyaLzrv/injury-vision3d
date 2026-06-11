@@ -31,7 +31,7 @@ const HOW_IT_WORKS = [
 const SCREEN_PILLS = [
 	{ label: '3D Body Map', to: '/body-map' },
 	{ label: 'Dashboard', to: '/dashboard' },
-	{ label: 'Injury History', to: null },
+	{ label: 'Injury History', to: '/body-map#injury-history' },
 	{ label: 'Weekly Report', to: '/reports/weekly' },
 	{ label: 'PDF Export', to: '/reports/weekly' },
 	{ label: 'Smart Suggestions', to: null },
@@ -47,7 +47,7 @@ function painBarColor(level) {
 
 export default function StartPage() {
 	return (
-		<div className="min-h-dvh bg-slate-50 text-slate-900">
+		<div className="min-h-dvh text-slate-900" style={{ backgroundColor: '#F8FAFC' }}>
 			<header className="border-b border-slate-200 bg-white">
 				<div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 lg:px-8">
 					<div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ export default function StartPage() {
 						</div>
 
 						<p className="mt-5 text-xs text-slate-400">
-							Self-tracking tool only — not a medical diagnosis application.
+							Self-tracking tool only — not clinical guidance.
 						</p>
 					</section>
 
