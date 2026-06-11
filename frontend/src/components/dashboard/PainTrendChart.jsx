@@ -10,6 +10,8 @@ import {
 	YAxis,
 } from 'recharts';
 import { injuryApi } from '../../api/injuryApi.js';
+import { cardClassName } from '../ui/cardStyles.js';
+import { buttonStyles } from '../ui/buttonStyles.js';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
 import { getLogTimestamp } from '../report/weeklyReportUtils.js';
 import {
@@ -119,7 +121,7 @@ export default function PainTrendChart({
 
 	return (
 		<section
-			className={`rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60 ${className}`.trim()}
+			className={`${cardClassName} ${className}`.trim()}
 			style={sectionStyle}
 		>
 			<h2
@@ -151,18 +153,21 @@ export default function PainTrendChart({
 						No self-tracked pain data for this period yet.
 					</p>
 					{showEmptyLink && (
-						<Link
-							to="/body-map"
-							className="mt-4 inline-flex rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-500"
-						>
+						<Link to="/body-map" className={`${buttonStyles.teal} mt-4`}>
 							Open 3D Body Map
 						</Link>
 					)}
 				</div>
 			)}
 
+			{!loading && !errorMessage && chartData.length === 1 && (
+				<p className="mt-4 rounded-lg border border-sky-100 bg-sky-50 px-3 py-2 text-sm text-sky-800">
+					Only one pain entry this week. Add more logs to see a trend.
+				</p>
+			)}
+
 			{!loading && !errorMessage && chartData.length > 0 && (
-				<div className="mt-6 h-72 w-full min-w-0 overflow-x-auto">
+				<div className="mt-4 h-72 w-full min-w-0 overflow-x-auto">
 					<ResponsiveContainer width="100%" height="100%" minWidth={280}>
 						<LineChart
 							data={chartData}

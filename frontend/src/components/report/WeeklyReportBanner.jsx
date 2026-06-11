@@ -1,7 +1,7 @@
 export default function WeeklyReportBanner() {
 	return (
 		<div
-			className="rounded-2xl border px-5 py-4 shadow-sm"
+			className="rounded-xl border px-5 py-3.5 shadow-sm"
 			style={{
 				borderColor: '#bae6fd',
 				background: 'linear-gradient(to right, #eff6ff, #f0fdfa)',

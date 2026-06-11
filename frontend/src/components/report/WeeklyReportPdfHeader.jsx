@@ -5,7 +5,7 @@ export default function WeeklyReportPdfHeader({
 }) {
 	return (
 		<div
-			className="overflow-hidden rounded-2xl border shadow-sm"
+			className="overflow-hidden rounded-xl border shadow-sm"
 			style={{
 				borderColor: '#e2e8f0',
 				backgroundColor: '#ffffff',

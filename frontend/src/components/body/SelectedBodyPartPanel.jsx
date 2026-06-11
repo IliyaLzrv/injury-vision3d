@@ -97,7 +97,7 @@ export default function SelectedBodyPartPanel({
 
 	if (!selectedBodyPart) {
 		return (
-			<Card className="flex min-h-[420px] flex-col">
+			<Card className="flex min-h-[400px] flex-col">
 				<div className="flex flex-1 flex-col items-center justify-center text-center">
 					<div
 						className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-sky-50 text-sky-500"

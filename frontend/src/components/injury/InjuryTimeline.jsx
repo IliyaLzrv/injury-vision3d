@@ -38,22 +38,22 @@ export default function InjuryTimeline({
 
 	return (
 		<>
-			<section className="mt-10">
+			<section>
 				{showHeader && (
-					<header className="mb-6">
+					<header className="mb-5">
 						<div className="flex flex-wrap items-start justify-between gap-3">
 							<div>
-								<h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+								<h2 className="text-xl font-semibold tracking-tight text-slate-900">
 									Injury History
 								</h2>
-								<p className="mt-2 max-w-2xl text-sm text-slate-500">
+								<p className="mt-1.5 max-w-2xl text-sm text-slate-500">
 									Timeline of all logged pain entries across all body parts.
 								</p>
 							</div>
 							<Badge variant="teal">High-Fidelity Prototype</Badge>
 						</div>
 
-						<div className="mt-5 flex flex-wrap gap-2">
+						<div className="mt-4 flex flex-wrap gap-2">
 							{['Body Part', 'Status', 'Activity Type', 'Last 30 days'].map(
 								(filter) => (
 									<span
@@ -94,24 +94,32 @@ export default function InjuryTimeline({
 								aria-hidden="true"
 							/>
 							{sortedLogs.map((log, index) => {
-								const isHighPain = Number(log.painLevel) >= 7;
+								const painLevel = Number(log.painLevel);
+								const isHighPain = painLevel >= 7;
+								const isModeratePain = painLevel >= 4 && painLevel < 7;
 
 								return (
 									<li
 										key={log.id}
-										className={`relative pl-10 ${index < sortedLogs.length - 1 ? 'pb-6' : ''}`}
+										className={`relative pl-10 ${index < sortedLogs.length - 1 ? 'pb-5' : ''}`}
 									>
 										<span
-											className={`absolute left-3 top-5 h-3.5 w-3.5 rounded-full border-2 border-white shadow-sm ${
-												isHighPain ? 'bg-red-500' : 'bg-sky-500'
+											className={`absolute left-3 top-5 h-3 w-3 rounded-full border-2 border-white ring-1 ring-slate-100 ${
+												isHighPain
+													? 'bg-red-500'
+													: isModeratePain
+														? 'bg-orange-500'
+														: 'bg-sky-500'
 											}`}
 											aria-hidden="true"
 										/>
 										<div
 											className={`rounded-xl border bg-white p-4 shadow-sm ${
 												isHighPain
-													? 'border-red-200 shadow-red-100/50'
-													: 'border-slate-200 shadow-slate-200/60'
+													? 'border-red-200 bg-red-50/30'
+													: isModeratePain
+														? 'border-orange-200 bg-orange-50/20'
+														: 'border-slate-200'
 											}`}
 										>
 											<div className="flex flex-wrap items-start justify-between gap-3">

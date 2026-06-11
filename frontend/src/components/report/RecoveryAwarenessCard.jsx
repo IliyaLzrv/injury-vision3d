@@ -69,7 +69,7 @@ export default function RecoveryAwarenessCard({
 
 	return (
 		<section
-			className="rounded-2xl border p-6 shadow-sm"
+			className="rounded-xl border p-5 shadow-sm"
 			style={{
 				borderColor: '#e2e8f0',
 				backgroundColor: '#ffffff',

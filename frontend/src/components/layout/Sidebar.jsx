@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { cn } from '../ui/buttonStyles.js';
 
@@ -8,17 +8,17 @@ const mainNavItems = [
 	{ label: 'Dashboard', to: '/dashboard' },
 	{ label: 'Injury History', to: '/body-map#injury-history' },
 	{ label: 'Weekly Report', to: '/reports/weekly' },
-	{ label: 'PDF Export', to: '/reports/weekly' },
+	{ label: 'PDF Export', to: '/reports/weekly', actionOnly: true },
 	{ label: 'Smart Suggestions', to: null, placeholder: true },
 	{ label: 'MVP vs Stretch', to: null, placeholder: true },
 	{ label: 'Design System', to: null, placeholder: true },
 ];
 
 const mobileNavItems = [
-	{ label: 'Dashboard', to: '/dashboard' },
-	{ label: 'Body Map', to: '/body-map' },
-	{ label: 'History', to: '/body-map#injury-history' },
-	{ label: 'Report', to: '/reports/weekly' },
+	{ label: 'Dashboard', to: '/dashboard', match: 'dashboard' },
+	{ label: 'Body Map', to: '/body-map', match: 'body-map' },
+	{ label: 'History', to: '/body-map#injury-history', match: 'history' },
+	{ label: 'Report', to: '/reports/weekly', match: 'weekly-report' },
 ];
 
 const supportingNavItems = [
@@ -26,7 +26,54 @@ const supportingNavItems = [
 	{ label: 'Register', to: '/register' },
 ];
 
-function navLinkClassName({ isActive }) {
+function isMainNavActive(item, location) {
+	if (item.actionOnly || item.placeholder) {
+		return false;
+	}
+
+	const { pathname, hash } = location;
+
+	if (item.label === '3D Body Map') {
+		return pathname === '/body-map' && hash !== '#injury-history';
+	}
+
+	if (item.label === 'Injury History') {
+		return pathname === '/body-map' && hash === '#injury-history';
+	}
+
+	if (item.label === 'Start') {
+		return pathname === '/';
+	}
+
+	if (item.label === 'Dashboard') {
+		return pathname === '/dashboard';
+	}
+
+	if (item.label === 'Weekly Report') {
+		return pathname === '/reports/weekly';
+	}
+
+	return pathname === item.to;
+}
+
+function isMobileNavActive(match, location) {
+	const { pathname, hash } = location;
+
+	switch (match) {
+		case 'dashboard':
+			return pathname === '/dashboard';
+		case 'body-map':
+			return pathname === '/body-map' && hash !== '#injury-history';
+		case 'history':
+			return pathname === '/body-map' && hash === '#injury-history';
+		case 'weekly-report':
+			return pathname === '/reports/weekly';
+		default:
+			return false;
+	}
+}
+
+function navLinkClassName(isActive) {
 	return cn(
 		'flex shrink-0 items-center rounded-lg px-3 py-2 text-sm font-medium transition',
 		isActive
@@ -35,7 +82,7 @@ function navLinkClassName({ isActive }) {
 	);
 }
 
-function NavItem({ item, isAuthenticated }) {
+function NavItem({ item, isAuthenticated, location }) {
 	if (item.placeholder) {
 		return (
 			<span
@@ -66,11 +113,23 @@ function NavItem({ item, isAuthenticated }) {
 		);
 	}
 
+	if (item.actionOnly) {
+		return (
+			<Link
+				to={item.to}
+				className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+			>
+				{item.label}
+			</Link>
+		);
+	}
+
 	return (
 		<NavLink
 			to={item.to}
-			className={navLinkClassName}
-			end={item.to === '/dashboard' || item.to === '/'}
+			end={false}
+			isActive={() => isMainNavActive(item, location)}
+			className={({ isActive }) => navLinkClassName(isActive)}
 		>
 			{item.label}
 		</NavLink>
@@ -80,6 +139,7 @@ function NavItem({ item, isAuthenticated }) {
 export default function Sidebar() {
 	const { isAuthenticated, logout } = useAuth();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	function handleLogout() {
 		logout();
@@ -107,13 +167,14 @@ export default function Sidebar() {
 			</div>
 
 			<nav
-				className="flex gap-1 overflow-x-auto border-b border-slate-100 px-3 py-2 lg:hidden"
+				className="flex gap-1.5 overflow-x-auto border-b border-slate-100 px-3 py-2 lg:hidden"
 				aria-label="Quick navigation"
 			>
 				{mobileNavItems.map((item) => (
 					<NavLink
 						key={item.label}
 						to={item.to}
+						isActive={() => isMobileNavActive(item.match, location)}
 						className={({ isActive }) =>
 							cn(
 								'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition',
@@ -138,7 +199,11 @@ export default function Sidebar() {
 				<ul className="space-y-0.5">
 					{mainNavItems.map((item) => (
 						<li key={item.label}>
-							<NavItem item={item} isAuthenticated={isAuthenticated} />
+							<NavItem
+								item={item}
+								isAuthenticated={isAuthenticated}
+								location={location}
+							/>
 						</li>
 					))}
 				</ul>
@@ -149,7 +214,11 @@ export default function Sidebar() {
 				<ul className="space-y-0.5">
 					{supportingNavItems.map((item) => (
 						<li key={item.label}>
-							<NavItem item={item} isAuthenticated={isAuthenticated} />
+							<NavItem
+								item={item}
+								isAuthenticated={isAuthenticated}
+								location={location}
+							/>
 						</li>
 					))}
 				</ul>

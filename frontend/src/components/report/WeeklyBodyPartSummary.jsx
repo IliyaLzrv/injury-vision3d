@@ -32,7 +32,7 @@ export default function WeeklyBodyPartSummary({ logs = [] }) {
 
 	return (
 		<section
-			className="h-full rounded-2xl border p-6 shadow-sm"
+			className="h-full rounded-xl border p-5 shadow-sm"
 			style={{
 				borderColor: '#e2e8f0',
 				backgroundColor: '#ffffff',

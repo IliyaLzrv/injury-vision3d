@@ -8,7 +8,7 @@ export default function AppShell({ children }) {
 		>
 			<Sidebar />
 			<main className="min-w-0 flex-1 overflow-auto">
-				<div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+				<div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
 					{children}
 				</div>
 			</main>

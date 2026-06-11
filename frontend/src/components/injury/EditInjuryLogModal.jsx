@@ -109,7 +109,7 @@ export default function EditInjuryLogModal({
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="edit-injury-log-title"
-				className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-300/40"
+				className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-lg"
 				onClick={(event) => event.stopPropagation()}
 			>
 				<div className="flex items-start justify-between gap-4">
@@ -230,9 +230,9 @@ export default function EditInjuryLogModal({
 						</p>
 					)}
 
-					<p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
-						This log is for self-tracking and recovery awareness, not clinical
-						guidance.
+					<p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-500">
+						This log is for self-tracking and recovery awareness, not medical
+						diagnosis.
 					</p>
 
 					<div className="flex gap-3 pt-1">

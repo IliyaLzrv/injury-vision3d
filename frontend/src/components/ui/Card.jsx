@@ -1,3 +1,4 @@
+import { cardClassName } from './cardStyles.js';
 import { cn } from './buttonStyles.js';
 
 export default function Card({
@@ -8,11 +9,7 @@ export default function Card({
 }) {
 	return (
 		<div
-			className={cn(
-				'rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60',
-				padding && 'p-6',
-				className
-			)}
+			className={cn(cardClassName, !padding && 'p-0', className)}
 			{...props}
 		>
 			{children}

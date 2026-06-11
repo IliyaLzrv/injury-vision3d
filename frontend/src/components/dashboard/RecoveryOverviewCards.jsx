@@ -80,7 +80,7 @@ export default function RecoveryOverviewCards({
 
 	if (loading) {
 		return (
-			<section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+			<section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 				<p className="text-sm text-slate-500">Loading recovery overview…</p>
 			</section>
 		);
@@ -88,7 +88,7 @@ export default function RecoveryOverviewCards({
 
 	if (errorMessage) {
 		return (
-			<section className="rounded-2xl border border-red-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+			<section className="rounded-xl border border-red-200 bg-white p-5 shadow-sm">
 				<p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
 					{errorMessage}
 				</p>
@@ -100,7 +100,7 @@ export default function RecoveryOverviewCards({
 
 	if (isEmpty) {
 		return (
-			<section className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center shadow-sm shadow-slate-200/60">
+			<section className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
 				<p className="text-sm text-slate-500">
 					No injury logs yet. Start tracking on the 3D body map to see your
 					recovery summary here.

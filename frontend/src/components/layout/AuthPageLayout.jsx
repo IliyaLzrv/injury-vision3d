@@ -26,7 +26,7 @@ export default function AuthPageLayout({ title, subtitle, children, footer }) {
 				</div>
 			</div>
 
-			<div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60 sm:p-8">
+			<div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
 				<h1 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
 				{subtitle && <p className="mt-2 text-sm text-slate-500">{subtitle}</p>}
 				{children}

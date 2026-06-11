@@ -289,7 +289,7 @@ export default function BodyModel({
 	}
 
 	return (
-		<div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
+		<div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 			<div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-3">
 				<div className="flex flex-wrap gap-2">
 					<button
@@ -357,7 +357,7 @@ export default function BodyModel({
 				</Canvas>
 			</div>
 
-			<div className="space-y-4 border-t border-slate-200 px-4 py-4">
+			<div className="space-y-3 border-t border-slate-200 px-4 py-4">
 				<p className="inline-flex rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700">
 					Click any highlighted zone to select it
 				</p>

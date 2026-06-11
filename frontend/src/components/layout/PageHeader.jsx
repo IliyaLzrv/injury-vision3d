@@ -8,22 +8,22 @@ export default function PageHeader({
 	badge,
 }) {
 	return (
-		<header className="mb-6 sm:mb-8">
-			<div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+		<header className="mb-5 sm:mb-6">
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 				<div className="min-w-0 flex-1">
 					{eyebrow && (
 						<p className="text-xs font-semibold uppercase tracking-wide text-teal-600">
 							{eyebrow}
 						</p>
 					)}
-					<div className="mt-1 flex flex-wrap items-center gap-3">
-						<h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
+					<div className="mt-0.5 flex flex-wrap items-center gap-2 sm:gap-3">
+						<h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
 							{title}
 						</h1>
 						{badge && <Badge variant="teal">{badge}</Badge>}
 					</div>
 					{description && (
-						<p className="mt-2 max-w-3xl text-sm text-slate-500 sm:text-base">
+						<p className="mt-1.5 max-w-3xl text-sm text-slate-500">
 							{description}
 						</p>
 					)}

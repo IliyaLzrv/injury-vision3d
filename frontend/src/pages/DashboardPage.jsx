@@ -91,7 +91,7 @@ export default function DashboardPage() {
 				}
 			/>
 
-			<div className="space-y-8">
+			<div className="space-y-6">
 				<DashboardInsightBanner />
 
 				<RecoveryOverviewCards
@@ -139,7 +139,7 @@ export default function DashboardPage() {
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					<Link
 						to="/body-map"
-						className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 transition hover:border-teal-300 hover:shadow-md"
+						className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-teal-300 hover:shadow-md"
 					>
 						<p className="text-sm font-medium text-slate-900">Open 3D Body Map</p>
 						<p className="mt-2 text-sm text-slate-500">
@@ -149,7 +149,7 @@ export default function DashboardPage() {
 
 					<Link
 						to="/reports/weekly"
-						className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 transition hover:border-sky-300 hover:shadow-md"
+						className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-sky-300 hover:shadow-md"
 					>
 						<p className="text-sm font-medium text-slate-900">
 							Open Weekly Report
@@ -162,7 +162,7 @@ export default function DashboardPage() {
 					<button
 						type="button"
 						onClick={handleLogout}
-						className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm shadow-slate-200/60 transition hover:border-red-200 hover:shadow-md"
+						className="rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-red-200 hover:shadow-md"
 					>
 						<p className="text-sm font-medium text-slate-900">Logout</p>
 						<p className="mt-2 text-sm text-slate-500">

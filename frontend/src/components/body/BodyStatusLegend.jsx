@@ -11,11 +11,11 @@ const DISPLAY_LABELS = {
 
 export default function BodyStatusLegend() {
 	return (
-		<div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-			<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+		<div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+			<p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
 				Body status legend
 			</p>
-			<div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+			<div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-2">
 				{BODY_PAIN_LEGEND.map((item) => (
 					<div key={item.key} className="flex items-center gap-2 text-xs text-slate-600">
 						<span

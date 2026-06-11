@@ -34,7 +34,7 @@ export default function WeeklyReportSummary({
 	if (variant === 'training') {
 		return (
 			<section
-				className="rounded-2xl border p-6 shadow-sm"
+				className="rounded-xl border p-5 shadow-sm"
 				style={{ borderColor: '#e2e8f0', backgroundColor: '#ffffff' }}
 			>
 				<h2 className="text-lg font-semibold text-slate-900">
@@ -159,7 +159,7 @@ export default function WeeklyReportSummary({
 			</section>
 
 			<section
-				className="rounded-2xl border p-6 shadow-sm"
+				className="rounded-xl border p-5 shadow-sm"
 				style={{ borderColor: '#e2e8f0', backgroundColor: '#ffffff' }}
 			>
 				<h2 className="text-lg font-semibold text-slate-900">

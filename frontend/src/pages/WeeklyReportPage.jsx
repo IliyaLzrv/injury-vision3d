@@ -106,7 +106,7 @@ export default function WeeklyReportPage() {
 
 	return (
 		<>
-			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+			<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
 				<PageHeader
 					title="Weekly Recovery Report"
 					badge="High-Fidelity Prototype"
@@ -118,7 +118,7 @@ export default function WeeklyReportPage() {
 			<div
 				ref={reportRef}
 				data-pdf-report="true"
-				className="space-y-6 rounded-2xl border border-slate-200 p-4 shadow-sm sm:p-6"
+				className="space-y-5 rounded-xl border border-slate-200 p-4 shadow-sm sm:p-5"
 				style={PDF_SAFE_WRAPPER_STYLE}
 			>
 				<WeeklyReportPdfHeader
@@ -129,7 +129,7 @@ export default function WeeklyReportPage() {
 
 				{loading && (
 					<p
-						className="rounded-2xl border p-6 text-sm"
+						className="rounded-xl border p-5 text-sm"
 						style={{ borderColor: '#e2e8f0', color: '#64748b' }}
 					>
 						Loading weekly report…
@@ -138,7 +138,7 @@ export default function WeeklyReportPage() {
 
 				{!loading && errorMessage && (
 					<p
-						className="rounded-2xl border p-6 text-sm"
+						className="rounded-xl border p-5 text-sm"
 						style={{
 							borderColor: '#fecaca',
 							backgroundColor: '#fef2f2',
@@ -151,7 +151,7 @@ export default function WeeklyReportPage() {
 
 				{isEmpty && (
 					<div
-						className="rounded-2xl border border-dashed p-8 text-center"
+						className="rounded-xl border border-dashed p-6 text-center"
 						style={{ borderColor: '#cbd5e1', backgroundColor: '#f8fafc' }}
 					>
 						<p className="text-base font-medium" style={{ color: '#0f172a' }}>

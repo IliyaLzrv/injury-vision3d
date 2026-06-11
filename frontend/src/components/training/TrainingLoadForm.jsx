@@ -52,7 +52,7 @@ export default function TrainingLoadForm({ onSuccess }) {
 	}
 
 	return (
-		<div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+		<div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 			<h3 className="text-base font-semibold text-slate-900">Log training session</h3>
 			<p className="mt-1 text-sm text-slate-500">
 				Record self-tracked duration and intensity for recovery awareness.

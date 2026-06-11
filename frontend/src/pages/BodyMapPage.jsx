@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
 import BodyModel from '../components/body/BodyModel.jsx';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
@@ -11,6 +12,7 @@ import PageHeader from '../components/layout/PageHeader.jsx';
 import Badge from '../components/ui/Badge.jsx';
 
 export default function BodyMapPage() {
+	const location = useLocation();
 	const [selectedBodyPart, setSelectedBodyPart] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [successMessage, setSuccessMessage] = useState(null);
@@ -50,6 +52,12 @@ export default function BodyMapPage() {
 		};
 	}, [logsRefreshKey]);
 
+	useEffect(() => {
+		if (location.hash === '#injury-history') {
+			document.getElementById('injury-history')?.scrollIntoView({ behavior: 'smooth' });
+		}
+	}, [location.hash]);
+
 	function refreshInjuryLogs() {
 		setLogsRefreshKey((key) => key + 1);
 	}
@@ -77,7 +85,7 @@ export default function BodyMapPage() {
 				}
 			/>
 
-			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] xl:items-start">
+			<div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] xl:items-start">
 				<BodyModel
 					onBodyPartSelect={setSelectedBodyPart}
 					selectedBodyPart={selectedBodyPart}
@@ -100,7 +108,7 @@ export default function BodyMapPage() {
 				</p>
 			)}
 
-			<div id="injury-history" className="mt-10 scroll-mt-8">
+			<div id="injury-history" className="mt-8 scroll-mt-8">
 				<InjuryTimeline
 					logs={injuryLogs}
 					loading={logsLoading}
