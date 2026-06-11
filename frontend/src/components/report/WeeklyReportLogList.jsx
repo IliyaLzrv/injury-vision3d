@@ -8,66 +8,73 @@ import {
 
 export default function WeeklyReportLogList({ logs = [] }) {
 	return (
-		<section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-			<h2 className="text-lg font-semibold text-slate-900">
-				Recent injury logs this week
+		<section
+			className="rounded-2xl border p-6 shadow-sm"
+			style={{
+				borderColor: '#e2e8f0',
+				backgroundColor: '#ffffff',
+			}}
+		>
+			<h2 className="text-lg font-semibold" style={{ color: '#0f172a' }}>
+				Log Summary
 			</h2>
-			<p className="mt-1 text-sm text-slate-500">
+			<p className="mt-1 text-sm" style={{ color: '#64748b' }}>
 				Self-tracked pain and recovery entries from the current week.
 			</p>
 
 			{logs.length === 0 ? (
-				<p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+				<p
+					className="mt-4 rounded-lg border border-dashed px-4 py-6 text-center text-sm"
+					style={{
+						borderColor: '#cbd5e1',
+						backgroundColor: '#f8fafc',
+						color: '#64748b',
+					}}
+				>
 					No injury logs recorded this week.
 				</p>
 			) : (
-				<ul className="mt-4 space-y-3">
-					{logs.map((log) => (
-						<li
-							key={log.id}
-							className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
-						>
-							<div className="flex flex-wrap items-start justify-between gap-2">
-								<div>
-									<p className="font-medium text-slate-900">
-										{formatLabel(log.bodyPart, BODY_PART_LABELS)}
-									</p>
-									<p className="mt-0.5 text-xs text-slate-500">
+				<div className="mt-4 overflow-x-auto">
+					<table className="w-full min-w-[480px] text-left text-sm">
+						<thead>
+							<tr
+								className="border-b text-xs font-semibold uppercase tracking-wide"
+								style={{ borderColor: '#e2e8f0', color: '#64748b' }}
+							>
+								<th className="pb-3 pr-4">Date</th>
+								<th className="pb-3 pr-4">Body part</th>
+								<th className="pb-3 pr-4">Type</th>
+								<th className="pb-3 pr-4">Pain</th>
+								<th className="pb-3">Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							{logs.map((log) => (
+								<tr
+									key={log.id}
+									className="border-b"
+									style={{ borderColor: '#f1f5f9' }}
+								>
+									<td className="py-3 pr-4" style={{ color: '#475569' }}>
 										{formatLogDate(log)}
-									</p>
-								</div>
-								<span className="rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-xs text-slate-600">
-									Pain {log.painLevel}/10
-								</span>
-							</div>
-
-							<dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-								<div>
-									<dt className="text-xs uppercase tracking-wide text-slate-500">
-										Injury type
-									</dt>
-									<dd className="text-slate-700">
+									</td>
+									<td className="py-3 pr-4 font-medium" style={{ color: '#0f172a' }}>
+										{formatLabel(log.bodyPart, BODY_PART_LABELS)}
+									</td>
+									<td className="py-3 pr-4" style={{ color: '#475569' }}>
 										{formatLabel(log.injuryType, INJURY_TYPE_LABELS)}
-									</dd>
-								</div>
-								<div>
-									<dt className="text-xs uppercase tracking-wide text-slate-500">
-										Recovery status
-									</dt>
-									<dd className="text-slate-700">
+									</td>
+									<td className="py-3 pr-4" style={{ color: '#0f172a' }}>
+										{log.painLevel}/10
+									</td>
+									<td className="py-3" style={{ color: '#475569' }}>
 										{formatLabel(log.recoveryStatus, RECOVERY_STATUS_LABELS)}
-									</dd>
-								</div>
-							</dl>
-
-							{log.notes && (
-								<p className="mt-3 text-sm leading-relaxed text-slate-600">
-									{log.notes}
-								</p>
-							)}
-						</li>
-					))}
-				</ul>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			)}
 		</section>
 	);

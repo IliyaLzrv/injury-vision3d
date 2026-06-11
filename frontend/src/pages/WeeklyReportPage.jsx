@@ -1,19 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
-import PageHeader from '../components/layout/PageHeader.jsx';
 import { reportApi } from '../api/reportApi.js';
 import { trainingLoadApi } from '../api/trainingLoadApi.js';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import PainTrendChart from '../components/dashboard/PainTrendChart.jsx';
+import PageHeader from '../components/layout/PageHeader.jsx';
 import ExportReportButton from '../components/report/ExportReportButton.jsx';
+import RecoveryAwarenessCard from '../components/report/RecoveryAwarenessCard.jsx';
+import WeeklyBodyPartSummary from '../components/report/WeeklyBodyPartSummary.jsx';
+import WeeklyReportBanner from '../components/report/WeeklyReportBanner.jsx';
 import WeeklyReportLogList from '../components/report/WeeklyReportLogList.jsx';
+import WeeklyReportPdfHeader from '../components/report/WeeklyReportPdfHeader.jsx';
 import WeeklyReportSummary from '../components/report/WeeklyReportSummary.jsx';
 import {
 	filterLogsByWeek,
 	formatWeekRange,
 	getCurrentWeekRange,
 } from '../components/report/weeklyReportUtils.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
 function formatGeneratedDate() {
 	return new Date().toLocaleDateString(undefined, {
@@ -23,8 +28,14 @@ function formatGeneratedDate() {
 	});
 }
 
+const PDF_SAFE_WRAPPER_STYLE = {
+	backgroundColor: '#ffffff',
+	color: '#0f172a',
+};
+
 export default function WeeklyReportPage() {
 	const reportRef = useRef(null);
+	const { user } = useAuth();
 	const [overview, setOverview] = useState(null);
 	const [injuryLogs, setInjuryLogs] = useState([]);
 	const [trainingLoads, setTrainingLoads] = useState([]);
@@ -33,6 +44,7 @@ export default function WeeklyReportPage() {
 
 	const weekRange = useMemo(() => getCurrentWeekRange(), []);
 	const generatedDate = useMemo(() => formatGeneratedDate(), []);
+	const periodLabel = formatWeekRange(weekRange.start, weekRange.end);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -93,55 +105,78 @@ export default function WeeklyReportPage() {
 	const canExport = !loading && !errorMessage && !isEmpty;
 
 	return (
-		<div className="flex flex-wrap items-start justify-between gap-4">
+		<>
+			<div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+				<PageHeader
+					title="Weekly Recovery Report"
+					badge="High-Fidelity Prototype"
+					description={periodLabel}
+				/>
+				<ExportReportButton reportRef={reportRef} disabled={!canExport} />
+			</div>
+
 			<div
 				ref={reportRef}
 				data-pdf-report="true"
-				className="min-w-0 flex-1 space-y-3"
+				className="space-y-6 rounded-2xl border border-slate-200 p-6 shadow-sm"
+				style={PDF_SAFE_WRAPPER_STYLE}
 			>
-				<PageHeader
-					eyebrow="InjuryVision 3D · Recovery awareness report"
-					title="Weekly Injury & Recovery Report"
-					description={`${formatWeekRange(weekRange.start, weekRange.end)} · Generated ${generatedDate}. Self-tracked recovery summary for personal reflection or sharing with a coach or professional.`}
+				<WeeklyReportPdfHeader
+					athleteName={user?.fullName}
+					periodLabel={periodLabel}
+					generatedDate={generatedDate}
 				/>
 
-				<p className="max-w-3xl text-sm text-slate-600">
-					This weekly recovery report is based on your self-tracked pain data,
-					recovery logs, and training load reflection for sports self-tracking
-					and recovery awareness.
-				</p>
-
 				{loading && (
-					<p className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
+					<p
+						className="rounded-2xl border p-6 text-sm"
+						style={{ borderColor: '#e2e8f0', color: '#64748b' }}
+					>
 						Loading weekly report…
 					</p>
 				)}
 
 				{!loading && errorMessage && (
-					<p className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700 shadow-sm">
+					<p
+						className="rounded-2xl border p-6 text-sm"
+						style={{
+							borderColor: '#fecaca',
+							backgroundColor: '#fef2f2',
+							color: '#b91c1c',
+						}}
+					>
 						{errorMessage}
 					</p>
 				)}
 
 				{isEmpty && (
-					<div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm">
-						<p className="text-base font-medium text-slate-900">
+					<div
+						className="rounded-2xl border border-dashed p-8 text-center"
+						style={{ borderColor: '#cbd5e1', backgroundColor: '#f8fafc' }}
+					>
+						<p className="text-base font-medium" style={{ color: '#0f172a' }}>
 							No report data yet
 						</p>
-						<p className="mt-2 text-sm text-slate-500">
-							Start logging injuries on the body map or training sessions on the
-							dashboard to build your weekly recovery report.
+						<p className="mt-2 text-sm" style={{ color: '#64748b' }}>
+							Start logging on the body map or dashboard to build your weekly
+							recovery report.
 						</p>
 						<div className="mt-4 flex flex-wrap justify-center gap-3">
 							<Link
 								to="/body-map"
-								className="inline-flex rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-500"
+								className="inline-flex rounded-lg px-4 py-2 text-sm font-medium text-white"
+								style={{ backgroundColor: '#14b8a6' }}
 							>
 								Open 3D Body Map
 							</Link>
 							<Link
 								to="/dashboard"
-								className="inline-flex rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-teal-300"
+								className="inline-flex rounded-lg border px-4 py-2 text-sm font-medium"
+								style={{
+									borderColor: '#e2e8f0',
+									backgroundColor: '#ffffff',
+									color: '#334155',
+								}}
 							>
 								Go to Dashboard
 							</Link>
@@ -150,28 +185,47 @@ export default function WeeklyReportPage() {
 				)}
 
 				{!loading && !errorMessage && !isEmpty && (
-					<div className="mt-4 space-y-8">
+					<div className="space-y-6">
+						<WeeklyReportBanner />
+
 						<WeeklyReportSummary
 							overview={overview}
 							trainingLoads={weeklyTrainingLoads}
+							weeklyLogCount={weeklyInjuryLogs.length}
+							variant="weekly"
 						/>
 
-						<PainTrendChart
-							logs={weeklyInjuryLogs}
-							title="Weekly pain trend"
-							description="Self-tracked pain data for recovery awareness this week."
-							className=""
-							showEmptyLink={false}
+						<div className="grid gap-4 xl:grid-cols-2">
+							<PainTrendChart
+								logs={weeklyInjuryLogs}
+								loading={loading}
+								title="Pain Trend"
+								description="Self-tracked pain data for recovery awareness this week."
+								className=""
+								showEmptyLink={false}
+								pdfSafe
+							/>
+							<WeeklyBodyPartSummary logs={weeklyInjuryLogs} />
+						</div>
+
+						<RecoveryAwarenessCard
+							overview={overview}
+							weeklyLogs={weeklyInjuryLogs}
+							weeklyTrainingLoads={weeklyTrainingLoads}
+						/>
+
+						<WeeklyReportSummary
+							overview={overview}
+							trainingLoads={weeklyTrainingLoads}
+							variant="training"
 						/>
 
 						<WeeklyReportLogList logs={weeklyInjuryLogs} />
 					</div>
 				)}
 
-				<ProductDisclaimer className="mt-8" />
+				<ProductDisclaimer variant="pdf" className="mt-2" />
 			</div>
-
-			<ExportReportButton reportRef={reportRef} disabled={!canExport} />
-		</div>
+		</>
 	);
 }

@@ -63,6 +63,7 @@ export default function PainTrendChart({
 	description = 'Self-tracked pain data over time for recovery awareness and weekly reflection.',
 	className = 'mt-8',
 	showEmptyLink = true,
+	pdfSafe = false,
 }) {
 	const [internalLogs, setInternalLogs] = useState([]);
 	const [internalLoading, setInternalLoading] = useState(externalLogs === undefined);
@@ -108,12 +109,31 @@ export default function PainTrendChart({
 		externalLogs !== undefined ? externalLoading : internalLoading;
 	const chartData = useMemo(() => buildChartData(logs), [logs]);
 
+	const sectionStyle = pdfSafe
+		? {
+				borderColor: '#e2e8f0',
+				backgroundColor: '#ffffff',
+				color: '#0f172a',
+			}
+		: undefined;
+
 	return (
 		<section
 			className={`rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60 ${className}`.trim()}
+			style={sectionStyle}
 		>
-			<h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-			<p className="mt-1 text-sm text-slate-500">{description}</p>
+			<h2
+				className="text-lg font-semibold text-slate-900"
+				style={pdfSafe ? { color: '#0f172a' } : undefined}
+			>
+				{title}
+			</h2>
+			<p
+				className="mt-1 text-sm text-slate-500"
+				style={pdfSafe ? { color: '#64748b' } : undefined}
+			>
+				{description}
+			</p>
 
 			{loading && (
 				<p className="mt-6 text-sm text-slate-500">Loading pain trend…</p>
@@ -173,10 +193,10 @@ export default function PainTrendChart({
 							<Line
 								type="monotone"
 								dataKey="painLevel"
-								stroke="#0d9488"
+								stroke="#14b8a6"
 								strokeWidth={2}
-								dot={{ r: 4, fill: '#0d9488', strokeWidth: 0 }}
-								activeDot={{ r: 6, fill: '#14b8a6' }}
+								dot={{ r: 4, fill: '#14b8a6', strokeWidth: 0 }}
+								activeDot={{ r: 6, fill: '#0ea5e9' }}
 							/>
 						</LineChart>
 					</ResponsiveContainer>

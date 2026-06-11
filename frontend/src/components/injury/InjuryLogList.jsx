@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
+import Badge from '../ui/Badge.jsx';
+import Card from '../ui/Card.jsx';
+import { buttonStyles } from '../ui/buttonStyles.js';
 import EditInjuryLogModal from './EditInjuryLogModal.jsx';
 import {
 	formatLabel,
@@ -22,86 +25,74 @@ export default function InjuryLogList({
 
 	return (
 		<>
-			<section className="mt-8 rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-				<h2 className="text-lg font-semibold text-slate-100">Your injury logs</h2>
-				<p className="mt-1 text-sm text-slate-400">
-					Track your own pain and recovery entries for sports self-awareness.
-				</p>
-
-				{loading && (
-					<p className="mt-6 text-sm text-slate-400">Loading injury logs…</p>
-				)}
-
-				{!loading && errorMessage && (
-					<p className="mt-6 rounded-lg border border-red-800/50 bg-red-950/30 px-4 py-3 text-sm text-red-200">
-						{errorMessage}
+			<section className="mt-6">
+				<Card>
+					<h3 className="text-base font-semibold text-slate-900">All injury logs</h3>
+					<p className="mt-1 text-sm text-slate-500">
+						Compact list view of your self-tracked entries.
 					</p>
-				)}
 
-				{!loading && !errorMessage && logs.length === 0 && (
-					<p className="mt-6 rounded-lg border border-dashed border-slate-700 bg-slate-950/40 px-4 py-6 text-center text-sm text-slate-400">
-						No injury logs yet
-					</p>
-				)}
+					{loading && (
+						<p className="mt-6 text-sm text-slate-500">Loading injury logs…</p>
+					)}
 
-				{!loading && !errorMessage && logs.length > 0 && (
-					<ul className="mt-6 space-y-3">
-						{logs.map((log) => (
-							<li
-								key={log.id}
-								className="rounded-lg border border-slate-800 bg-slate-950/50 px-4 py-3"
-							>
-								<div className="flex flex-wrap items-start justify-between gap-2">
-									<div>
-										<p className="font-medium text-slate-100">
-											{formatLabel(log.bodyPart, BODY_PART_LABELS)}
-										</p>
-										<p className="mt-0.5 text-xs text-slate-500">
-											{formatLogDate(log)}
-										</p>
-									</div>
-									<div className="flex items-center gap-2">
-										<span className="rounded-full border border-slate-700 bg-slate-900 px-2.5 py-0.5 text-xs text-slate-300">
-											Pain {log.painLevel}/10
-										</span>
-										<button
-											type="button"
-											onClick={() => setEditingLog(log)}
-											className="rounded-lg border border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-300 transition hover:border-emerald-700/50 hover:text-emerald-300"
-										>
-											Update
-										</button>
-									</div>
-								</div>
+					{!loading && errorMessage && (
+						<p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+							{errorMessage}
+						</p>
+					)}
 
-								<dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-									<div>
-										<dt className="text-xs uppercase tracking-wide text-slate-500">
-											Injury type
-										</dt>
-										<dd className="text-slate-300">
-											{formatLabel(log.injuryType, INJURY_TYPE_LABELS)}
-										</dd>
-									</div>
-									<div>
-										<dt className="text-xs uppercase tracking-wide text-slate-500">
-											Recovery status
-										</dt>
-										<dd className="text-slate-300">
-											{formatLabel(log.recoveryStatus, RECOVERY_STATUS_LABELS)}
-										</dd>
-									</div>
-								</dl>
+					{!loading && !errorMessage && logs.length === 0 && (
+						<p className="mt-6 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+							No injury logs yet
+						</p>
+					)}
 
-								{log.notes && (
-									<p className="mt-3 text-sm leading-relaxed text-slate-400">
-										{log.notes}
-									</p>
-								)}
-							</li>
-						))}
-					</ul>
-				)}
+					{!loading && !errorMessage && logs.length > 0 && (
+						<ul className="mt-6 divide-y divide-slate-100">
+							{logs.map((log) => {
+								const isHighPain = Number(log.painLevel) >= 7;
+
+								return (
+									<li
+										key={log.id}
+										className={`flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0 ${
+											isHighPain ? 'rounded-lg border border-red-100 bg-red-50/30 px-3' : ''
+										}`}
+									>
+										<div>
+											<p className="font-medium text-slate-900">
+												{formatLabel(log.bodyPart, BODY_PART_LABELS)}
+											</p>
+											<p className="mt-0.5 text-xs text-slate-500">
+												{formatLogDate(log)} ·{' '}
+												{formatLabel(log.injuryType, INJURY_TYPE_LABELS)}
+											</p>
+										</div>
+										<div className="flex items-center gap-2">
+											<Badge variant={isHighPain ? 'red' : 'muted'}>
+												Pain {log.painLevel}/10
+											</Badge>
+											<Badge variant="indigo">
+												{formatLabel(
+													log.recoveryStatus,
+													RECOVERY_STATUS_LABELS
+												)}
+											</Badge>
+											<button
+												type="button"
+												onClick={() => setEditingLog(log)}
+												className={`${buttonStyles.secondary} px-3 py-1 text-xs`}
+											>
+												Update
+											</button>
+										</div>
+									</li>
+								);
+							})}
+						</ul>
+					)}
+				</Card>
 			</section>
 
 			<EditInjuryLogModal

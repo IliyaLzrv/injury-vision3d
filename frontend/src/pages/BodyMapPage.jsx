@@ -105,6 +105,7 @@ export default function BodyMapPage() {
 					logs={injuryLogs}
 					loading={logsLoading}
 					errorMessage={logsError}
+					onRefresh={refreshInjuryLogs}
 				/>
 
 				<InjuryLogList
@@ -115,7 +116,7 @@ export default function BodyMapPage() {
 				/>
 			</div>
 
-			<ProductDisclaimer className="mt-8" />
+			<ProductDisclaimer variant="light" className="mt-8" />
 
 			<AddInjuryLogModal
 				isOpen={isModalOpen}

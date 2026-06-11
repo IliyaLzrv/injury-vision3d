@@ -1,4 +1,10 @@
+import { useMemo, useState } from 'react';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
+import Badge from '../ui/Badge.jsx';
+import Card from '../ui/Card.jsx';
+import { buttonStyles } from '../ui/buttonStyles.js';
+import { getLogTimestamp } from '../report/weeklyReportUtils.js';
+import EditInjuryLogModal from './EditInjuryLogModal.jsx';
 import {
 	formatLabel,
 	formatLogDate,
@@ -6,82 +12,165 @@ import {
 	RECOVERY_STATUS_LABELS,
 } from './injuryLogUtils.js';
 
-export default function InjuryTimeline({ logs = [], loading = false, errorMessage = '' }) {
+function recoveryBadgeVariant(status) {
+	if (status === 'RECOVERED') return 'green';
+	if (status === 'RECOVERING') return 'indigo';
+	return 'orange';
+}
+
+export default function InjuryTimeline({
+	logs = [],
+	loading = false,
+	errorMessage = '',
+	onRefresh,
+	showHeader = true,
+}) {
+	const [editingLog, setEditingLog] = useState(null);
+
+	const sortedLogs = useMemo(
+		() => [...logs].sort((a, b) => getLogTimestamp(b) - getLogTimestamp(a)),
+		[logs]
+	);
+
+	function handleUpdateSuccess() {
+		onRefresh?.();
+	}
+
 	return (
-		<section className="mt-8 rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-			<h2 className="text-lg font-semibold text-slate-100">Injury history timeline</h2>
-			<p className="mt-1 text-sm text-slate-400">
-				Scan your pain and recovery progress over time for sports self-awareness.
-			</p>
+		<>
+			<section className="mt-10">
+				{showHeader && (
+					<header className="mb-6">
+						<div className="flex flex-wrap items-start justify-between gap-3">
+							<div>
+								<h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+									Injury History
+								</h2>
+								<p className="mt-2 max-w-2xl text-sm text-slate-500">
+									Timeline of all logged pain entries across all body parts.
+								</p>
+							</div>
+							<Badge variant="teal">High-Fidelity Prototype</Badge>
+						</div>
 
-			{loading && (
-				<p className="mt-6 text-sm text-slate-400">Loading injury history…</p>
-			)}
+						<div className="mt-5 flex flex-wrap gap-2">
+							{['Body Part', 'Status', 'Activity Type', 'Last 30 days'].map(
+								(filter) => (
+									<span
+										key={filter}
+										className="cursor-default rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm"
+										title="Visual filter — coming in a future sprint"
+									>
+										{filter}
+									</span>
+								)
+							)}
+						</div>
+					</header>
+				)}
 
-			{!loading && errorMessage && (
-				<p className="mt-6 rounded-lg border border-red-800/50 bg-red-950/30 px-4 py-3 text-sm text-red-200">
-					{errorMessage}
-				</p>
-			)}
+				<Card padding={false} className="overflow-hidden">
+					{loading && (
+						<p className="p-6 text-sm text-slate-500">Loading injury history…</p>
+					)}
 
-			{!loading && !errorMessage && logs.length === 0 && (
-				<p className="mt-6 rounded-lg border border-dashed border-slate-700 bg-slate-950/40 px-4 py-6 text-center text-sm text-slate-400">
-					No injury history yet
-				</p>
-			)}
+					{!loading && errorMessage && (
+						<p className="m-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+							{errorMessage}
+						</p>
+					)}
 
-			{!loading && !errorMessage && logs.length > 0 && (
-				<ol className="relative mt-6 space-y-0 border-l border-slate-700 pl-6">
-					{logs.map((log, index) => (
-						<li key={log.id} className={`relative ${index < logs.length - 1 ? 'pb-6' : ''}`}>
-							<span
-								className="absolute -left-[1.6rem] top-1.5 h-3 w-3 rounded-full border-2 border-slate-900 bg-emerald-400"
+					{!loading && !errorMessage && sortedLogs.length === 0 && (
+						<p className="m-6 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+							No injury history yet. Log pain on the 3D body map to build your
+							timeline.
+						</p>
+					)}
+
+					{!loading && !errorMessage && sortedLogs.length > 0 && (
+						<ol className="relative px-6 py-6">
+							<div
+								className="absolute bottom-6 left-[2.15rem] top-6 w-px bg-slate-200"
 								aria-hidden="true"
 							/>
-							<div className="rounded-lg border border-slate-800 bg-slate-950/50 px-4 py-3">
-								<div className="flex flex-wrap items-start justify-between gap-2">
-									<div>
-										<p className="font-medium text-slate-100">
-											{formatLabel(log.bodyPart, BODY_PART_LABELS)}
-										</p>
-										<p className="mt-0.5 text-xs text-slate-500">
-											{formatLogDate(log)}
-										</p>
-									</div>
-									<span className="rounded-full border border-slate-700 bg-slate-900 px-2.5 py-0.5 text-xs text-slate-300">
-										Pain {log.painLevel}/10
-									</span>
-								</div>
+							{sortedLogs.map((log, index) => {
+								const isHighPain = Number(log.painLevel) >= 7;
 
-								<dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-									<div>
-										<dt className="text-xs uppercase tracking-wide text-slate-500">
-											Injury type
-										</dt>
-										<dd className="text-slate-300">
-											{formatLabel(log.injuryType, INJURY_TYPE_LABELS)}
-										</dd>
-									</div>
-									<div>
-										<dt className="text-xs uppercase tracking-wide text-slate-500">
-											Recovery status
-										</dt>
-										<dd className="text-slate-300">
-											{formatLabel(log.recoveryStatus, RECOVERY_STATUS_LABELS)}
-										</dd>
-									</div>
-								</dl>
+								return (
+									<li
+										key={log.id}
+										className={`relative pl-10 ${index < sortedLogs.length - 1 ? 'pb-6' : ''}`}
+									>
+										<span
+											className={`absolute left-3 top-5 h-3.5 w-3.5 rounded-full border-2 border-white shadow-sm ${
+												isHighPain ? 'bg-red-500' : 'bg-sky-500'
+											}`}
+											aria-hidden="true"
+										/>
+										<div
+											className={`rounded-xl border bg-white p-4 shadow-sm ${
+												isHighPain
+													? 'border-red-200 shadow-red-100/50'
+													: 'border-slate-200 shadow-slate-200/60'
+											}`}
+										>
+											<div className="flex flex-wrap items-start justify-between gap-3">
+												<div>
+													<p className="text-xs font-medium text-slate-400">
+														{formatLogDate(log)}
+													</p>
+													<p className="mt-1 text-base font-semibold text-slate-900">
+														{formatLabel(log.bodyPart, BODY_PART_LABELS)}
+													</p>
+													<p className="mt-0.5 text-sm text-slate-500">
+														{formatLabel(log.injuryType, INJURY_TYPE_LABELS)}
+													</p>
+												</div>
+												<div className="flex flex-wrap items-center gap-2">
+													<Badge variant={isHighPain ? 'red' : 'muted'}>
+														Pain {log.painLevel}/10
+													</Badge>
+													<Badge
+														variant={recoveryBadgeVariant(log.recoveryStatus)}
+													>
+														{formatLabel(
+															log.recoveryStatus,
+															RECOVERY_STATUS_LABELS
+														)}
+													</Badge>
+												</div>
+											</div>
 
-								{log.notes && (
-									<p className="mt-3 text-sm leading-relaxed text-slate-400">
-										{log.notes}
-									</p>
-								)}
-							</div>
-						</li>
-					))}
-				</ol>
-			)}
-		</section>
+											{log.notes && (
+												<p className="mt-3 text-sm leading-relaxed text-slate-600">
+													{log.notes}
+												</p>
+											)}
+
+											{onRefresh && (
+												<button
+													type="button"
+													onClick={() => setEditingLog(log)}
+													className={`${buttonStyles.secondary} mt-4 px-3 py-1.5 text-xs`}
+												>
+													Update
+												</button>
+											)}
+										</div>
+									</li>
+								);
+							})}
+						</ol>
+					)}
+				</Card>
+			</section>
+
+			<EditInjuryLogModal
+				isOpen={Boolean(editingLog)}
+				onClose={() => setEditingLog(null)}
+				injuryLog={editingLog}
+				onSuccess={handleUpdateSuccess}
+			/>
+		</>
 	);
 }
