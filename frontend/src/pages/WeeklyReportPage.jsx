@@ -7,7 +7,7 @@ import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import PainTrendChart from '../components/dashboard/PainTrendChart.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import ExportReportButton from '../components/report/ExportReportButton.jsx';
-import RecoveryAwarenessCard from '../components/report/RecoveryAwarenessCard.jsx';
+import RecoverySuggestions from '../components/report/RecoverySuggestions.jsx';
 import WeeklyBodyPartSummary from '../components/report/WeeklyBodyPartSummary.jsx';
 import WeeklyReportBanner from '../components/report/WeeklyReportBanner.jsx';
 import WeeklyReportLogList from '../components/report/WeeklyReportLogList.jsx';
@@ -39,8 +39,11 @@ export default function WeeklyReportPage() {
 	const [overview, setOverview] = useState(null);
 	const [injuryLogs, setInjuryLogs] = useState([]);
 	const [trainingLoads, setTrainingLoads] = useState([]);
+	const [suggestions, setSuggestions] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [suggestionsLoading, setSuggestionsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState('');
+	const [suggestionsError, setSuggestionsError] = useState('');
 
 	const weekRange = useMemo(() => getCurrentWeekRange(), []);
 	const generatedDate = useMemo(() => formatGeneratedDate(), []);
@@ -79,7 +82,29 @@ export default function WeeklyReportPage() {
 			}
 		}
 
+		async function loadSuggestions() {
+			setSuggestionsLoading(true);
+			setSuggestionsError('');
+
+			try {
+				const data = await reportApi.getSuggestions();
+				if (!cancelled) {
+					setSuggestions(Array.isArray(data) ? data : []);
+				}
+			} catch (error) {
+				if (!cancelled) {
+					setSuggestions([]);
+					setSuggestionsError(error.message || 'Failed to load recovery suggestions.');
+				}
+			} finally {
+				if (!cancelled) {
+					setSuggestionsLoading(false);
+				}
+			}
+		}
+
 		loadReportData();
+		loadSuggestions();
 
 		return () => {
 			cancelled = true;
@@ -208,10 +233,11 @@ export default function WeeklyReportPage() {
 							<WeeklyBodyPartSummary logs={weeklyInjuryLogs} />
 						</div>
 
-						<RecoveryAwarenessCard
-							overview={overview}
-							weeklyLogs={weeklyInjuryLogs}
-							weeklyTrainingLoads={weeklyTrainingLoads}
+						<RecoverySuggestions
+							suggestions={suggestions}
+							loading={suggestionsLoading}
+							error={suggestionsError}
+							pdfSafe
 						/>
 
 						<WeeklyReportSummary

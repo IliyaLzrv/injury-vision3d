@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { injuryApi } from '../../api/injuryApi.js';
 import { BODY_PART_LABELS } from '../body/bodyParts.js';
 import { buttonStyles } from '../ui/buttonStyles.js';
@@ -61,10 +62,6 @@ export default function AddInjuryLogModal({
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [isOpen, onClose, submitting]);
 
-	if (!isOpen || !selectedBodyPart) {
-		return null;
-	}
-
 	const bodyPartLabel =
 		BODY_PART_LABELS[selectedBodyPart] ?? selectedBodyPart;
 
@@ -97,20 +94,30 @@ export default function AddInjuryLogModal({
 	}
 
 	return (
-		<div
-			className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6 backdrop-blur-sm sm:py-8"
-			role="presentation"
-			onClick={() => {
-				if (!submitting) {
-					onClose?.();
-				}
-			}}
-		>
-			<div
+		<AnimatePresence>
+			{isOpen && selectedBodyPart && (
+				<motion.div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6 backdrop-blur-sm sm:py-8"
+					role="presentation"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.18 }}
+					onClick={() => {
+						if (!submitting) {
+							onClose?.();
+						}
+					}}
+				>
+			<motion.div
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="add-injury-log-title"
 				className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-lg"
+				initial={{ opacity: 0, scale: 0.95, y: 16 }}
+				animate={{ opacity: 1, scale: 1, y: 0 }}
+				exit={{ opacity: 0, scale: 0.95, y: 16 }}
+				transition={{ duration: 0.2, ease: 'easeOut' }}
 				onClick={(event) => event.stopPropagation()}
 			>
 				<div className="flex items-start justify-between gap-4">
@@ -258,7 +265,9 @@ export default function AddInjuryLogModal({
 						</button>
 					</div>
 				</form>
-			</div>
-		</div>
+			</motion.div>
+				</motion.div>
+			)}
+		</AnimatePresence>
 	);
 }

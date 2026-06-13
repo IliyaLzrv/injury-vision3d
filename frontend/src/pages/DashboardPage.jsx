@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
 import { reportApi } from '../api/reportApi.js';
 import { trainingLoadApi } from '../api/trainingLoadApi.js';
+import FadeIn from '../components/common/FadeIn.jsx';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import DashboardInsightBanner from '../components/dashboard/DashboardInsightBanner.jsx';
 import PainTrendChart from '../components/dashboard/PainTrendChart.jsx';
@@ -11,6 +12,7 @@ import RecoveryByBodyPartCard from '../components/dashboard/RecoveryByBodyPartCa
 import RecoveryOverviewCards from '../components/dashboard/RecoveryOverviewCards.jsx';
 import WeeklySummaryCard from '../components/dashboard/WeeklySummaryCard.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
+import RecoverySuggestions from '../components/report/RecoverySuggestions.jsx';
 import TrainingLoadForm from '../components/training/TrainingLoadForm.jsx';
 import TrainingLoadSummary from '../components/training/TrainingLoadSummary.jsx';
 import { buttonStyles } from '../components/ui/buttonStyles.js';
@@ -24,8 +26,11 @@ export default function DashboardPage() {
 	const [overview, setOverview] = useState(null);
 	const [injuryLogs, setInjuryLogs] = useState([]);
 	const [trainingLoads, setTrainingLoads] = useState([]);
+	const [suggestions, setSuggestions] = useState([]);
 	const [dataLoading, setDataLoading] = useState(true);
+	const [suggestionsLoading, setSuggestionsLoading] = useState(true);
 	const [dataError, setDataError] = useState('');
+	const [suggestionsError, setSuggestionsError] = useState('');
 
 	useEffect(() => {
 		let cancelled = false;
@@ -66,12 +71,42 @@ export default function DashboardPage() {
 		};
 	}, [trainingRefreshKey]);
 
+	useEffect(() => {
+		let cancelled = false;
+
+		async function loadSuggestions() {
+			setSuggestionsLoading(true);
+			setSuggestionsError('');
+
+			try {
+				const data = await reportApi.getSuggestions();
+				if (!cancelled) {
+					setSuggestions(Array.isArray(data) ? data : []);
+				}
+			} catch (error) {
+				if (!cancelled) {
+					setSuggestions([]);
+					setSuggestionsError(error.message || 'Failed to load recovery suggestions.');
+				}
+			} finally {
+				if (!cancelled) {
+					setSuggestionsLoading(false);
+				}
+			}
+		}
+
+		loadSuggestions();
+		return () => {
+			cancelled = true;
+		};
+	}, [trainingRefreshKey]);
+
 	const weekRange = getCurrentWeekRange();
 	const weeklyInjuryLogs = filterLogsByWeek(injuryLogs, weekRange);
 
 	function handleLogout() {
 		logout();
-		navigate('/login');
+		navigate('/');
 	}
 
 	function handleTrainingSaved() {
@@ -92,7 +127,9 @@ export default function DashboardPage() {
 			/>
 
 			<div className="space-y-6">
-				<DashboardInsightBanner />
+				<FadeIn>
+					<DashboardInsightBanner />
+				</FadeIn>
 
 				<RecoveryOverviewCards
 					overview={overview}
@@ -101,7 +138,7 @@ export default function DashboardPage() {
 					variant="dashboard"
 				/>
 
-				<div className="grid gap-4 xl:grid-cols-2">
+				<FadeIn delay={0.05} className="grid gap-4 xl:grid-cols-2">
 					<PainTrendChart
 						logs={weeklyInjuryLogs}
 						loading={dataLoading}
@@ -111,32 +148,46 @@ export default function DashboardPage() {
 						showEmptyLink
 					/>
 					<RecoveryByBodyPartCard logs={injuryLogs} loading={dataLoading} />
-				</div>
+				</FadeIn>
 
-				<RecentInjuryLogsCard logs={injuryLogs} loading={dataLoading} />
+				<FadeIn delay={0.1}>
+					<RecentInjuryLogsCard logs={injuryLogs} loading={dataLoading} />
+				</FadeIn>
 
-				<WeeklySummaryCard
-					overview={overview}
-					injuryLogs={injuryLogs}
-					trainingLoads={trainingLoads}
-					loading={dataLoading}
-				/>
+				<FadeIn delay={0.1}>
+					<WeeklySummaryCard
+						overview={overview}
+						injuryLogs={injuryLogs}
+						trainingLoads={trainingLoads}
+						loading={dataLoading}
+					/>
+				</FadeIn>
 
-				<section>
-					<h2 className="text-lg font-semibold text-slate-900">
-						Training load analysis
-					</h2>
-					<p className="mt-1 text-sm text-slate-500">
-						Self-tracked training context to support recovery awareness.
-					</p>
+				<FadeIn delay={0.12}>
+					<RecoverySuggestions
+						suggestions={suggestions}
+						loading={suggestionsLoading}
+						error={suggestionsError}
+					/>
+				</FadeIn>
 
-					<div className="mt-4 grid gap-4 lg:grid-cols-2">
-						<TrainingLoadForm onSuccess={handleTrainingSaved} />
-						<TrainingLoadSummary refreshKey={trainingRefreshKey} />
-					</div>
-				</section>
+				<FadeIn delay={0.15}>
+					<section>
+						<h2 className="text-lg font-semibold text-slate-900">
+							Training load analysis
+						</h2>
+						<p className="mt-1 text-sm text-slate-500">
+							Self-tracked training context to support recovery awareness.
+						</p>
 
-				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						<div className="mt-4 grid gap-4 lg:grid-cols-2">
+							<TrainingLoadForm onSuccess={handleTrainingSaved} />
+							<TrainingLoadSummary refreshKey={trainingRefreshKey} />
+						</div>
+					</section>
+				</FadeIn>
+
+				<FadeIn delay={0.15} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					<Link
 						to="/body-map"
 						className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-teal-300 hover:shadow-md"
@@ -169,7 +220,7 @@ export default function DashboardPage() {
 							End your session and return to login
 						</p>
 					</button>
-				</div>
+				</FadeIn>
 
 				<ProductDisclaimer variant="light" />
 			</div>

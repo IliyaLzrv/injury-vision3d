@@ -202,6 +202,9 @@ export default function PainTrendChart({
 								strokeWidth={2}
 								dot={{ r: 4, fill: '#14b8a6', strokeWidth: 0 }}
 								activeDot={{ r: 6, fill: '#0ea5e9' }}
+								isAnimationActive={!pdfSafe}
+								animationDuration={900}
+								animationEasing="ease-out"
 							/>
 						</LineChart>
 					</ResponsiveContainer>

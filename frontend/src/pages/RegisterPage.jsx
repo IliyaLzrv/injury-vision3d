@@ -33,17 +33,8 @@ export default function RegisterPage() {
 		setErrorMessage('');
 
 		try {
-			const response = await register({ fullName, email, password });
-
-			if (response.token) {
-				navigate('/dashboard');
-			} else {
-				navigate('/login', {
-					state: {
-						message: 'Account created successfully. Please sign in.',
-					},
-				});
-			}
+			await register({ fullName, email, password });
+			navigate('/dashboard');
 		} catch (error) {
 			setErrorMessage(formatRegisterErrors(error));
 		} finally {

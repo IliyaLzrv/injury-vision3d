@@ -15,4 +15,9 @@ export const reportApi = {
 		const response = await axiosClient.get('/reports/weekly');
 		return response.data;
 	},
+
+	async getSuggestions() {
+		const response = await axiosClient.get('/reports/suggestions');
+		return response.data;
+	},
 };

@@ -42,6 +42,7 @@ class AuthRegistrationIntegrationTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.message").value("Registration successful"))
+			.andExpect(jsonPath("$.token").isNotEmpty())
 			.andExpect(jsonPath("$.user.fullName").value("Alex Runner"))
 			.andExpect(jsonPath("$.user.email").value("alex@example.com"))
 			.andExpect(jsonPath("$.user.role").value("ATHLETE"))

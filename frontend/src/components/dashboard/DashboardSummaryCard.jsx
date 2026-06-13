@@ -1,3 +1,6 @@
+import { motion } from 'framer-motion';
+import AnimatedCounter from '../common/AnimatedCounter.jsx';
+
 const ACCENT_STYLES = {
 	teal: {
 		border: 'border-t-[#14B8A6]',
@@ -26,12 +29,17 @@ export default function DashboardSummaryCard({
 	value,
 	accent = 'teal',
 	hint,
+	index = 0,
 }) {
 	const accentStyle = ACCENT_STYLES[accent] ?? ACCENT_STYLES.teal;
 
 	return (
-		<div
-			className={`rounded-xl border border-slate-200 border-t-[3px] bg-white p-5 shadow-sm ${accentStyle.border}`}
+		<motion.div
+			initial={{ opacity: 0, y: 14, scale: 0.97 }}
+			animate={{ opacity: 1, y: 0, scale: 1 }}
+			transition={{ duration: 0.35, ease: 'easeOut', delay: index * 0.06 }}
+			whileHover={{ y: -2 }}
+			className={`rounded-xl border border-slate-200 border-t-[3px] bg-white p-5 shadow-sm transition-shadow hover:shadow-md ${accentStyle.border}`}
 		>
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
@@ -39,7 +47,7 @@ export default function DashboardSummaryCard({
 						{label}
 					</p>
 					<p className="mt-1.5 text-2xl font-semibold tracking-tight text-slate-900">
-						{value}
+						<AnimatedCounter value={value} />
 					</p>
 					{hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
 				</div>
@@ -50,6 +58,6 @@ export default function DashboardSummaryCard({
 					<span className="h-2 w-2 rounded-full bg-current opacity-80" />
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 }

@@ -43,8 +43,9 @@ public class AuthService {
 		user.setRole(UserRole.ATHLETE);
 
 		User saved = userRepository.save(user);
+		String token = jwtService.generateToken(saved);
 
-		return new AuthResponse("Registration successful", UserResponse.from(saved));
+		return new AuthResponse("Registration successful", token, UserResponse.from(saved));
 	}
 
 	public AuthResponse login(LoginRequest request) {

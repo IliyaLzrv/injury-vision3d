@@ -3,15 +3,11 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { cn } from '../ui/buttonStyles.js';
 
 const mainNavItems = [
-	{ label: 'Start', to: '/' },
 	{ label: '3D Body Map', to: '/body-map' },
 	{ label: 'Dashboard', to: '/dashboard' },
 	{ label: 'Injury History', to: '/body-map#injury-history' },
 	{ label: 'Weekly Report', to: '/reports/weekly' },
 	{ label: 'PDF Export', to: '/reports/weekly', actionOnly: true },
-	{ label: 'Smart Suggestions', to: null, placeholder: true },
-	{ label: 'MVP vs Stretch', to: null, placeholder: true },
-	{ label: 'Design System', to: null, placeholder: true },
 ];
 
 const mobileNavItems = [
@@ -21,13 +17,8 @@ const mobileNavItems = [
 	{ label: 'Report', to: '/reports/weekly', match: 'weekly-report' },
 ];
 
-const supportingNavItems = [
-	{ label: 'Log In', to: '/login' },
-	{ label: 'Register', to: '/register' },
-];
-
 function isMainNavActive(item, location) {
-	if (item.actionOnly || item.placeholder) {
+	if (item.actionOnly) {
 		return false;
 	}
 
@@ -39,10 +30,6 @@ function isMainNavActive(item, location) {
 
 	if (item.label === 'Injury History') {
 		return pathname === '/body-map' && hash === '#injury-history';
-	}
-
-	if (item.label === 'Start') {
-		return pathname === '/';
 	}
 
 	if (item.label === 'Dashboard') {
@@ -82,37 +69,7 @@ function navLinkClassName(isActive) {
 	);
 }
 
-function NavItem({ item, isAuthenticated, location }) {
-	if (item.placeholder) {
-		return (
-			<span
-				className="flex cursor-not-allowed items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-slate-400"
-				title="Coming in a future sprint"
-				aria-disabled="true"
-			>
-				{item.label}
-				<span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-					Soon
-				</span>
-			</span>
-		);
-	}
-
-	if (
-		isAuthenticated &&
-		(item.to === '/login' || item.to === '/register')
-	) {
-		return (
-			<span
-				className="flex cursor-not-allowed items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-400"
-				aria-disabled="true"
-				title="You are already signed in"
-			>
-				{item.label}
-			</span>
-		);
-	}
-
+function NavItem({ item, location }) {
 	if (item.actionOnly) {
 		return (
 			<Link
@@ -137,13 +94,13 @@ function NavItem({ item, isAuthenticated, location }) {
 }
 
 export default function Sidebar() {
-	const { isAuthenticated, logout } = useAuth();
+	const { logout } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	function handleLogout() {
 		logout();
-		navigate('/login');
+		navigate('/');
 	}
 
 	return (
@@ -193,47 +150,23 @@ export default function Sidebar() {
 				className="hidden flex-1 overflow-y-auto px-3 py-4 lg:block"
 				aria-label="Main navigation"
 			>
-				<p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-					Main
-				</p>
 				<ul className="space-y-0.5">
 					{mainNavItems.map((item) => (
 						<li key={item.label}>
-							<NavItem
-								item={item}
-								isAuthenticated={isAuthenticated}
-								location={location}
-							/>
-						</li>
-					))}
-				</ul>
-
-				<p className="mt-6 px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-					Supporting
-				</p>
-				<ul className="space-y-0.5">
-					{supportingNavItems.map((item) => (
-						<li key={item.label}>
-							<NavItem
-								item={item}
-								isAuthenticated={isAuthenticated}
-								location={location}
-							/>
+							<NavItem item={item} location={location} />
 						</li>
 					))}
 				</ul>
 			</nav>
 
 			<div className="border-t border-slate-200 px-4 py-3 lg:py-4">
-				{isAuthenticated && (
-					<button
-						type="button"
-						onClick={handleLogout}
-						className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 lg:mb-3"
-					>
-						Log out
-					</button>
-				)}
+				<button
+					type="button"
+					onClick={handleLogout}
+					className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 lg:mb-3"
+				>
+					Log out
+				</button>
 				<p className="text-[11px] leading-relaxed text-slate-400">
 					Self-tracking only. Not medical advice.
 				</p>
