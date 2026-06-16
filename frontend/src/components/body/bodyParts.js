@@ -1,0 +1,36 @@
+/** Body part identifiers for injury mapping (Sprint 2+). */
+export const BODY_PART = {
+	HEAD: 'HEAD',
+	CHEST: 'CHEST',
+	ABDOMEN: 'ABDOMEN',
+	LEFT_SHOULDER: 'LEFT_SHOULDER',
+	RIGHT_SHOULDER: 'RIGHT_SHOULDER',
+	LEFT_ARM: 'LEFT_ARM',
+	RIGHT_ARM: 'RIGHT_ARM',
+	LEFT_HAND: 'LEFT_HAND',
+	RIGHT_HAND: 'RIGHT_HAND',
+	LEFT_LEG: 'LEFT_LEG',
+	RIGHT_LEG: 'RIGHT_LEG',
+	LEFT_KNEE: 'LEFT_KNEE',
+	RIGHT_KNEE: 'RIGHT_KNEE',
+	LEFT_ANKLE: 'LEFT_ANKLE',
+	RIGHT_ANKLE: 'RIGHT_ANKLE',
+};
+
+export const BODY_PART_LABELS = {
+	[BODY_PART.HEAD]: 'Head',
+	[BODY_PART.CHEST]: 'Chest',
+	[BODY_PART.ABDOMEN]: 'Abdomen',
+	[BODY_PART.LEFT_SHOULDER]: 'Left shoulder',
+	[BODY_PART.RIGHT_SHOULDER]: 'Right shoulder',
+	[BODY_PART.LEFT_ARM]: 'Left arm',
+	[BODY_PART.RIGHT_ARM]: 'Right arm',
+	[BODY_PART.LEFT_HAND]: 'Left hand',
+	[BODY_PART.RIGHT_HAND]: 'Right hand',
+	[BODY_PART.LEFT_LEG]: 'Left leg',
+	[BODY_PART.RIGHT_LEG]: 'Right leg',
+	[BODY_PART.LEFT_KNEE]: 'Left knee',
+	[BODY_PART.RIGHT_KNEE]: 'Right knee',
+	[BODY_PART.LEFT_ANKLE]: 'Left ankle',
+	[BODY_PART.RIGHT_ANKLE]: 'Right ankle',
+};
