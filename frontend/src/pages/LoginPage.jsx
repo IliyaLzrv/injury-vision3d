@@ -26,7 +26,7 @@ export default function LoginPage() {
 	}, [location.state]);
 
 	if (!loading && isAuthenticated) {
-		return <Navigate to="/dashboard" replace />;
+		return <Navigate to="/body-map" replace />;
 	}
 
 	async function handleSubmit(event) {
@@ -36,7 +36,7 @@ export default function LoginPage() {
 
 		try {
 			await login({ email, password });
-			navigate('/dashboard');
+			navigate('/body-map');
 		} catch (error) {
 			setErrorMessage(error.message || 'Login failed. Please try again.');
 		} finally {

@@ -131,11 +131,20 @@ export default function WeeklyReportPage() {
 
 	return (
 		<>
+			<div className="mb-1">
+				<Link
+					to="/dashboard"
+					className="inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-slate-800"
+				>
+					← Back to Dashboard
+				</Link>
+			</div>
+
 			<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
 				<PageHeader
-					title="Weekly Recovery Report"
+					title="Weekly Summary"
 					badge="High-Fidelity Prototype"
-					description={periodLabel}
+					description={`${periodLabel} · End-of-week breakdown with pain trends, body-part summary, recovery suggestions, and PDF export.`}
 				/>
 				<ExportReportButton reportRef={reportRef} disabled={!canExport} />
 			</div>
@@ -183,8 +192,9 @@ export default function WeeklyReportPage() {
 							No report data yet
 						</p>
 						<p className="mt-2 text-sm" style={{ color: '#64748b' }}>
-							Start logging on the body map or dashboard to build your weekly
-							recovery report.
+							Log pain entries on the 3D body map to build your weekly report.
+							The Dashboard shows your live status; this page generates a weekly
+							summary once you have data.
 						</p>
 						<div className="mt-4 flex flex-wrap justify-center gap-3">
 							<Link

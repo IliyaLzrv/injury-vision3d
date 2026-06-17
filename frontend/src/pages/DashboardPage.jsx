@@ -118,11 +118,16 @@ export default function DashboardPage() {
 			<PageHeader
 				title="Dashboard"
 				badge="High-Fidelity Prototype"
-				description="Your recovery overview for this week."
+				description="Live overview of your current recovery status — pain levels, active injuries, and training load at a glance."
 				actions={
-					<Link to="/body-map" className={buttonStyles.teal}>
-						Open 3D Body Map
-					</Link>
+					<div className="flex flex-wrap gap-2">
+						<Link to="/body-map" className={buttonStyles.teal}>
+							Open 3D Body Map
+						</Link>
+						<Link to="/reports/weekly" className={buttonStyles.secondary}>
+							Weekly Summary & PDF
+						</Link>
+					</div>
 				}
 			/>
 
@@ -202,11 +207,9 @@ export default function DashboardPage() {
 						to="/reports/weekly"
 						className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-sky-300 hover:shadow-md"
 					>
-						<p className="text-sm font-medium text-slate-900">
-							Open Weekly Report
-						</p>
+						<p className="text-sm font-medium text-slate-900">Weekly Summary</p>
 						<p className="mt-2 text-sm text-slate-500">
-							Review your weekly pain, recovery, and training load summary
+							End-of-week view with body-part breakdown, suggestions, and PDF export
 						</p>
 					</Link>
 

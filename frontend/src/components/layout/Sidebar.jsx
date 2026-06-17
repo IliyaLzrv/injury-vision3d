@@ -3,18 +3,17 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { cn } from '../ui/buttonStyles.js';
 
 const mainNavItems = [
-	{ label: '3D Body Map', to: '/body-map' },
-	{ label: 'Dashboard', to: '/dashboard' },
-	{ label: 'Injury History', to: '/body-map#injury-history' },
-	{ label: 'Weekly Report', to: '/reports/weekly' },
-	{ label: 'PDF Export', to: '/reports/weekly', actionOnly: true },
+	{ label: '3D Body Map', to: '/body-map', sub: 'Log pain & track status' },
+	{ label: 'Dashboard', to: '/dashboard', sub: 'Live recovery overview' },
+	{ label: 'Injury History', to: '/body-map#injury-history', sub: 'All logged entries' },
+	{ label: 'Weekly Summary', to: '/reports/weekly', sub: 'Weekly breakdown & PDF export' },
 ];
 
 const mobileNavItems = [
 	{ label: 'Dashboard', to: '/dashboard', match: 'dashboard' },
 	{ label: 'Body Map', to: '/body-map', match: 'body-map' },
 	{ label: 'History', to: '/body-map#injury-history', match: 'history' },
-	{ label: 'Report', to: '/reports/weekly', match: 'weekly-report' },
+	{ label: 'Summary', to: '/reports/weekly', match: 'weekly-report' },
 ];
 
 function isMainNavActive(item, location) {
@@ -36,7 +35,7 @@ function isMainNavActive(item, location) {
 		return pathname === '/dashboard';
 	}
 
-	if (item.label === 'Weekly Report') {
+	if (item.label === 'Weekly Summary') {
 		return pathname === '/reports/weekly';
 	}
 
@@ -88,7 +87,14 @@ function NavItem({ item, location }) {
 			isActive={() => isMainNavActive(item, location)}
 			className={({ isActive }) => navLinkClassName(isActive)}
 		>
-			{item.label}
+			<span className="flex flex-col gap-0">
+				{item.label}
+				{item.sub && (
+					<span className="text-[10px] font-normal leading-none opacity-60">
+						{item.sub}
+					</span>
+				)}
+			</span>
 		</NavLink>
 	);
 }

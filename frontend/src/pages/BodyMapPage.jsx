@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { injuryApi } from '../api/injuryApi.js';
+import { reportApi } from '../api/reportApi.js';
 import BodyModel from '../components/body/BodyModel.jsx';
 import ProductDisclaimer from '../components/common/ProductDisclaimer.jsx';
 import SelectedBodyPartPanel from '../components/body/SelectedBodyPartPanel.jsx';
 import AddInjuryLogModal from '../components/injury/AddInjuryLogModal.jsx';
 import InjuryLogList from '../components/injury/InjuryLogList.jsx';
 import InjuryTimeline from '../components/injury/InjuryTimeline.jsx';
+import RecoverySuggestions from '../components/report/RecoverySuggestions.jsx';
 import { BODY_PART_LABELS } from '../components/body/bodyParts.js';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import Badge from '../components/ui/Badge.jsx';
@@ -20,6 +22,9 @@ export default function BodyMapPage() {
 	const [logsLoading, setLogsLoading] = useState(true);
 	const [logsError, setLogsError] = useState('');
 	const [logsRefreshKey, setLogsRefreshKey] = useState(0);
+	const [suggestions, setSuggestions] = useState([]);
+	const [suggestionsLoading, setSuggestionsLoading] = useState(true);
+	const [suggestionsError, setSuggestionsError] = useState('');
 
 	useEffect(() => {
 		let cancelled = false;
@@ -53,6 +58,37 @@ export default function BodyMapPage() {
 	}, [logsRefreshKey]);
 
 	useEffect(() => {
+		let cancelled = false;
+
+		async function loadSuggestions() {
+			setSuggestionsLoading(true);
+			setSuggestionsError('');
+
+			try {
+				const data = await reportApi.getSuggestions();
+				if (!cancelled) {
+					setSuggestions(Array.isArray(data) ? data : []);
+				}
+			} catch (error) {
+				if (!cancelled) {
+					setSuggestions([]);
+					setSuggestionsError(error.message || 'Failed to load recovery suggestions.');
+				}
+			} finally {
+				if (!cancelled) {
+					setSuggestionsLoading(false);
+				}
+			}
+		}
+
+		loadSuggestions();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [logsRefreshKey]);
+
+	useEffect(() => {
 		if (location.hash === '#injury-history') {
 			document.getElementById('injury-history')?.scrollIntoView({ behavior: 'smooth' });
 		}
@@ -77,7 +113,7 @@ export default function BodyMapPage() {
 			<PageHeader
 				title="3D Body Map"
 				badge="High-Fidelity Prototype"
-				description="Click a body part to view status or add a pain log."
+				description="Click a body part to log pain, track status, and review recovery awareness suggestions."
 				actions={
 					<Badge variant="primary" className="max-w-[220px] text-center leading-snug">
 						Core MVP: clickable body parts + pain logging
@@ -107,6 +143,15 @@ export default function BodyMapPage() {
 					{successMessage}
 				</p>
 			)}
+
+			<RecoverySuggestions
+				suggestions={suggestions}
+				loading={suggestionsLoading}
+				error={suggestionsError}
+				title="Recovery Awareness Suggestions"
+				description="Rule-based reflections from your self-tracked pain data — updated each time you log."
+				className="mt-8"
+			/>
 
 			<div id="injury-history" className="mt-8 scroll-mt-8">
 				<InjuryTimeline

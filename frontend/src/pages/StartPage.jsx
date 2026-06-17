@@ -47,8 +47,7 @@ const SCREEN_PILLS = [
 	{ label: '3D Body Map', protectedPath: '/body-map' },
 	{ label: 'Dashboard', protectedPath: '/dashboard' },
 	{ label: 'Injury History', protectedPath: '/body-map#injury-history' },
-	{ label: 'Weekly Report', protectedPath: '/reports/weekly' },
-	{ label: 'PDF Export', protectedPath: '/reports/weekly' },
+	{ label: 'Weekly Summary', protectedPath: '/reports/weekly' },
 ];
 
 function painBarColor(level) {
@@ -65,7 +64,7 @@ export default function StartPage() {
 	const { isAuthenticated, loading } = useAuth();
 
 	const bodyMapPath = resolveAppPath('/body-map', isAuthenticated);
-	const dashboardPath = resolveAppPath('/dashboard', isAuthenticated);
+	const dashboardPath = resolveAppPath('/body-map', isAuthenticated);
 
 	return (
 		<div className="min-h-dvh text-slate-900" style={{ backgroundColor: '#F8FAFC' }}>
@@ -85,8 +84,8 @@ export default function StartPage() {
 					</div>
 					<div className="flex items-center gap-2">
 						{isAuthenticated ? (
-							<Link to="/dashboard" className={buttonStyles.primary}>
-								Go to Dashboard
+							<Link to="/body-map" className={buttonStyles.primary}>
+								Open Body Map
 							</Link>
 						) : (
 							<>
